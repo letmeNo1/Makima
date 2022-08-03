@@ -2,10 +2,17 @@
 
 import ctypes
 import ctypes.wintypes
-import comtypes
-import comtypes.automation
-import comtypes.client
 
+
+import _ctypes
+from comtypes.automation import *
+import comtypes.client
+from comtypes import automation, CoUninitialize
+from comtypes.hresult import S_OK
+from pywinauto.win32defines import VT_DISPATCH
+from servicemanager import CoInitializeEx
+
+from windows.call_win_api import i_accessible_ex
 from windows.call_win_api.i_element import IElement
 from windows.utils.common import replace_inappropriate_symbols
 from windows.utils.mouse import WinMouse
@@ -13,6 +20,8 @@ from windows.utils.mouse import WinMouse
 comtypes.client.GetModule('oleacc.dll')
 
 CO_E_OBJNOTCONNECTED = -2147220995
+comtypes.CoInitializeEx()
+
 
 class WinUIElement(IElement):
     """
@@ -20,10 +29,10 @@ class WinUIElement(IElement):
     """
 
     _acc_role_name_map = {
-        1: u'TitleBar',  # TitleBar
-        2: u'MenuBar',  # MenuBar
-        3: u'ScrollBar',  # ScrollBar
-        4: u'Grip',  # Grip
+        1: u'title bar',  # TitleBar
+        2: u'menu bar',  # MenuBar
+        3: u'scroll bar',  # ScrollBar
+        4: u'grip',  # Grip
         5: u'Sound',  # Sound
         6: u'Cursor',  # Cursor
         7: u'Caret',  # Caret
@@ -139,6 +148,7 @@ class WinUIElement(IElement):
         :param obj_handle: instance of i_accessible or window handle.
         :param int i_object_id: object id.
         """
+
         if isinstance(obj_handle, comtypes.gen.Accessibility.IAccessible):
             i_accessible = obj_handle
         else:
@@ -153,6 +163,7 @@ class WinUIElement(IElement):
         self._i_accessible = i_accessible
         self._i_object_id = i_object_id
         self._cached_children = set()
+        self._simple_elements = dict()
 
     def check_state(self, state):
         """
@@ -257,17 +268,17 @@ class WinUIElement(IElement):
         return not self._check_state(self._StateFlag.SYSTEM_UNAVAILABLE)
 
     @property
-    def get_parent_count(self):
+    def acc_parent_count(self):
         parent_count = 0
         parent = self.acc_parent
         while parent:
             parent_count += 1
-            parent = parent._parent
+            parent = parent.acc_parent
 
         return parent_count
 
     @property
-    def _child_count(self):
+    def acc_child_count(self):
         if self._i_object_id == 0:
             return self._get_child_count_safely(self._i_accessible)
         else:
@@ -291,17 +302,13 @@ class WinUIElement(IElement):
         self._select(self._SelectionFlag.TAKEFOCUS)
 
     @property
-    def _acc_name(self):
-        return self.acc_name
-
-    @property
     def get_acc_location(self):
         obj_child_id = comtypes.automation.VARIANT()
         obj_child_id.vt = comtypes.automation.VT_I4
         obj_child_id.value = self._i_object_id
 
         obj_l, obj_t, obj_w, obj_h = ctypes.c_long(), ctypes.c_long(), \
-            ctypes.c_long(), ctypes.c_long()
+                                     ctypes.c_long(), ctypes.c_long()
 
         self._i_accessible._IAccessible__com_accLocation(ctypes.byref(obj_l),
                                                          ctypes.byref(obj_t),
@@ -312,7 +319,7 @@ class WinUIElement(IElement):
         return obj_l.value, obj_t.value, obj_w.value, obj_h.value
 
     @property
-    def acc_value(self):
+    def get_acc_value(self):
         obj_child_id = comtypes.automation.VARIANT()
         obj_child_id.vt = comtypes.automation.VT_I4
         obj_child_id.value = self._i_object_id
@@ -350,7 +357,7 @@ class WinUIElement(IElement):
         return result
 
     @property
-    def acc_selection(self):
+    def get_acc_selection(self):
         obj_children = comtypes.automation.VARIANT()
         self._i_accessible._IAccessible__com__get_accSelection(
             ctypes.byref(obj_children))
@@ -358,7 +365,7 @@ class WinUIElement(IElement):
         return obj_children.value
 
     @property
-    def _acc_state(self):
+    def get_acc_state(self):
         obj_child_id = comtypes.automation.VARIANT()
         obj_child_id.vt = comtypes.automation.VT_I4
         obj_child_id.value = self._i_object_id
@@ -369,7 +376,15 @@ class WinUIElement(IElement):
         return obj_state.value
 
     @property
-    def acc_focused_element(self):
+    def get_acc_focused_element(self):
+        result = None
+        if self._i_accessible.accFocus:
+            result = WinUIElement(self._i_accessible.accFocus, self._i_object_id)
+
+        return result
+
+    @property
+    def get_acc_focused_element(self):
         result = None
         if self._i_accessible.accFocus:
             result = WinUIElement(self._i_accessible.accFocus, self._i_object_id)
@@ -381,31 +396,50 @@ class WinUIElement(IElement):
         return self._acc_role_name_map.get(self.get_role, 'unknown')
 
     @property
+    def get_automation_id(self):
+        return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_AutomationIdPropertyId)
+
+    @property
+    def get_full_description(self):
+        return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_FullDescriptionPropertyId)
+
+    @property
+    def get_class_name(self):
+        return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_ClassNamePropertyId)
+
     def get_acc_children_elements(self):
-        children_elements = set()
-        if self._i_object_id > 0:
-            raise StopIteration()
+        ichild_start = 0
+        cc_children = self._i_accessible.accChildCount
+        pc_obtained = c_long()
+        variant_array_type = VARIANT * self._i_accessible.accChildCount
+        rgvar_children = variant_array_type()
+        res = ctypes.oledll.oleacc.AccessibleChildren(
+            self._i_accessible, ichild_start, cc_children, byref(rgvar_children), byref(pc_obtained))
+        comtypes.CoUninitialize()
+        if res == S_OK:
+            children_elements = []
 
-        obj_acc_child_array = (comtypes.automation.VARIANT *
-                               self._i_accessible.accChildCount)()
-        obj_acc_child_count = ctypes.c_long()
+            for child in rgvar_children:
+                # Child is IAccessible
+                if child.vt == comtypes.automation.VT_DISPATCH:
+                    acc = WinUIElement(child.value.QueryInterface(comtypes.gen.Accessibility.IAccessible),0)
+                    children_elements.append(acc)
+                # Child is Simple Element
+                elif child.vt == comtypes.automation.VT_I4:
+                    acc = WinUIElement(self._i_accessible, child.value)
+                    children_elements.append(acc)
+            return children_elements
+        else:
+            raise ValueError("Can't get accessible children")
 
-        ctypes.oledll.oleacc.AccessibleChildren(
-            self._i_accessible,
-            0,
-            self._i_accessible.accChildCount,
-            obj_acc_child_array,
-            ctypes.byref(obj_acc_child_count))
-
-        for i in range(obj_acc_child_count.value):
-            obj_acc_child = obj_acc_child_array[i]
-            if obj_acc_child.vt == comtypes.automation.VT_DISPATCH:
-                children_elements.add(WinUIElement(obj_acc_child.value.QueryInterface(
-                    comtypes.gen.Accessibility.IAccessible), 0))
-            else:
-                children_elements.add(WinUIElement(self._i_accessible, obj_acc_child.value))
-
-        return children_elements
+    def _wrap_simple_element(self, accptr, childid):
+        """
+        Associate simple element and parent accessible object
+        """
+        if accptr not in self._simple_elements:
+            self._simple_elements[accptr] = [childid]
+        else:
+            self._simple_elements[accptr].append(childid)
 
     def __iter__(self):
         if self._i_object_id > 0:
@@ -430,52 +464,6 @@ class WinUIElement(IElement):
             else:
                 yield WinUIElement(self._i_accessible, obj_acc_child.value)
 
-    def __findcacheiter(self, only_visible, **kwargs):
-        """
-        Find child element in the cache.
-
-        :param bool only_visible: flag that indicates will we search only
-        :rtype: WinElement
-        :return: yield found element.
-        """
-        for obj_element in self._cached_children:
-            if obj_element._match(only_visible, **kwargs):
-                yield obj_element
-
-    def _finditer(self, only_visible, **kwargs):
-        """
-        Find child element.
-
-        :param bool only_visible: flag that indicates will we search only
-        :rtype: WinElement
-        :return: yield found element.
-        """
-        lst_queue = list(self)
-
-        if self.is_top_level_window:
-            lst_queue.extend(self._find_windows_by_same_proc())
-
-        while lst_queue:
-            obj_element = lst_queue.pop(0)
-            self._cached_children.add(obj_element)
-
-            if obj_element._match(only_visible, **kwargs):
-                yield obj_element
-
-            if obj_element.acc_child_count:
-                childs = [el for el in list(obj_element) if
-                          el._i_accessible != obj_element._i_accessible]
-                lst_queue[:0] = childs
-
-
-
-    def findall(self, only_visible=True, **kwargs):
-        result = self._finditer(only_visible, **kwargs)
-        if result:
-            result = list(result)
-
-        return result
-
     def is_object_exists(self, **kwargs):
         try:
             self.find(**kwargs)
@@ -483,7 +471,7 @@ class WinUIElement(IElement):
         except Exception:
             return False
 
-    def get_child_count_safely(self, i_accessible):
+    def _get_child_count_safely(self, i_accessible):
         """
         Safely gets child count.
 
@@ -497,3 +485,20 @@ class WinUIElement(IElement):
             if isinstance(ex, comtypes.COMError) and getattr(ex, 'hresult') \
                     in (CO_E_OBJNOTCONNECTED,):
                 return 0
+
+    def get_property_value(self, identifiers):
+        p_service = self._i_accessible.QueryInterface(comtypes.IServiceProvider)
+
+        if p_service is not None:
+            try:
+                i_accessible_ex_ptr = p_service.QueryService(i_accessible_ex.IAccessibleEx._iid_,
+                                                             i_accessible_ex.IAccessibleEx)
+
+                if i_accessible_ex_ptr is not None:
+                    ia_ex_service = i_accessible_ex_ptr.QueryInterface(
+                        comtypes.gen.UIAutomationClient.IRawElementProviderSimple)
+
+                    if ia_ex_service is not None:
+                        return ia_ex_service.GetPropertyValue(identifiers)
+            except Exception:
+                pass

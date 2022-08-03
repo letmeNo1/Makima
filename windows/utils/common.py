@@ -58,13 +58,3 @@ def verify_mouse_button_name(cls, button_name, supported_names):
         raise Exception(
             'Button name should be one of supported %s.' %
             repr(supported_names))
-
-
-def is_python_3(cls):
-    """
-    Indicates is currently python 3 used or not.
-
-    :rtype: bool
-    :return: boolean indicator.
-    """
-    return sys.version_info.major == 3

@@ -1,10 +1,12 @@
 import ctypes.wintypes
 
+import comtypes
 from comtypes import GUID, IUnknown, COMMETHOD, POINTER, helpstring
-from comtypes.gen._944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0 import IRawElementProviderSimple, IAccessible
+from comtypes.gen._1EA4DBF0_3C3B_11CF_810C_00AA00389B71_0_1_1 import IAccessible
+from comtypes.gen._944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0 import IRawElementProviderSimple
 
 HRESULT = ctypes.wintypes.DWORD
-
+comtypes.client.GetModule('uiautomationcore.dll')
 
 class IAccessibleEx(IUnknown):
     _case_insensitive_ = True

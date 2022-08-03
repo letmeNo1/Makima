@@ -224,11 +224,3 @@ class IElement(IUnknown):
                     lst_queue.append((obj_element_child, obj_sub_tree))
 
         return obj_document.toprettyxml()
-
-    def __str__(self):
-        result = '[Role: %s | Name: %r | Child count: %d]' % \
-                 (self.acc_role_name,
-                  self.acc_name,
-                  self.acc_child_count)
-
-        return result
