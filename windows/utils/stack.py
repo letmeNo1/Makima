@@ -1,4 +1,5 @@
 class Stack(object):
+
     """Stack"""
 
     def __init__(self):

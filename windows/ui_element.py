@@ -3,14 +3,11 @@
 import ctypes
 import ctypes.wintypes
 
-
 import _ctypes
-from comtypes.automation import *
 import comtypes.client
-from comtypes import automation, CoUninitialize
+from comtypes import automation
+from comtypes.automation import *
 from comtypes.hresult import S_OK
-from pywinauto.win32defines import VT_DISPATCH
-from servicemanager import CoInitializeEx
 
 from windows.call_win_api import i_accessible_ex
 from windows.call_win_api.i_element import IElement
@@ -18,9 +15,9 @@ from windows.utils.common import replace_inappropriate_symbols
 from windows.utils.mouse import WinMouse
 
 comtypes.client.GetModule('oleacc.dll')
+comtypes.CoInitializeEx()
 
 CO_E_OBJNOTCONNECTED = -2147220995
-comtypes.CoInitializeEx()
 
 
 class WinUIElement(IElement):
@@ -33,66 +30,66 @@ class WinUIElement(IElement):
         2: u'menu bar',  # MenuBar
         3: u'scroll bar',  # ScrollBar
         4: u'grip',  # Grip
-        5: u'Sound',  # Sound
-        6: u'Cursor',  # Cursor
-        7: u'Caret',  # Caret
-        8: u'Alert',  # Alert
-        9: u'Window',  # Window
-        10: u'Client',  # Client
-        11: u'PopupMenu',  # PopupMenu
-        12: u'MenuItem',  # MenuItem
-        13: u'Tooltip',  # Tooltip
-        14: u'Application',  # Application
-        15: u'Document',  # Document
-        16: u'Pane',  # Pane
-        17: u'Chart',  # Chart
-        18: u'Dialog',  # Dialog
-        19: u'Border',  # Border
-        20: u'Grouping',  # Grouping
-        21: u'Separator',  # Separator
-        22: u'ToolBar',  # ToolBar
-        23: u'StatusBar',  # StatusBar
-        24: u'Table',  # Table
-        25: u'ColumnHeader',  # ColumnHeader
-        26: u'RowHeader',  # RowHeader
-        27: u'Column',  # Column
-        28: u'Row',  # Row
-        29: u'Cell',  # Cell
-        30: u'Link',  # Link
-        31: u'HelpBalloon',  # HelpBalloon
-        32: u'Character',  # Character
-        33: u'List',  # List
-        34: u'ListItem',  # ListItem
-        35: u'Outline',  # Outline
-        36: u'OutlineItem',  # OutlineItem
-        37: u'PageTab',  # PageTab
-        38: u'PropertyPage',  # PropertyPage
-        39: u'Indicator',  # Indicator
-        40: u'Graphic',  # Graphic
-        41: u'Text',  # Text
-        42: u'EditableText',  # EditableText
-        43: u'PushButton',  # PushButton
-        44: u'CheckBox',  # CheckBox
-        45: u'RadioButton',  # RadioButton
-        46: u'ComboBox',  # ComboBox
-        47: u'DropDown',  # DropDown
-        48: u'ProgressBar',  # ProgressBar
-        49: u'Dial',  # Dial
-        50: u'HotKeyField',  # HotKeyField
-        51: u'Slider',  # Slider
-        52: u'SpinBox',  # SpinBox
-        53: u'Diagram',  # Diagram
-        54: u'Animation',  # Animation
-        55: u'Equation',  # Equation
-        56: u'DropDownButton',  # DropDownButton
-        57: u'MenuButton',  # MenuButton
-        58: u'GridDropDownButton',  # GridDropDownButton
-        59: u'WhiteSpace',  # WhiteSpace
-        60: u'PageTabList',  # PageTabList
-        61: u'Clock',  # Clock
-        62: u'SplitButton',  # SplitButton
-        63: u'IPAddress',  # IPAddress
-        64: u'OutlineButton'  # OutlineButton
+        5: u'sound',  # Sound
+        6: u'cursor',  # Cursor
+        7: u'caret',  # Caret
+        8: u'alert',  # Alert
+        9: u'window',  # Window
+        10: u'client',  # Client
+        11: u'popup menu',  # PopupMenu
+        12: u'menu item',  # MenuItem
+        13: u'tool tip',  # Tooltip
+        14: u'application',  # Application
+        15: u'document',  # Document
+        16: u'pane',  # Pane
+        17: u'chart',  # Chart
+        18: u'dialog',  # Dialog
+        19: u'border',  # Border
+        20: u'grouping',  # Grouping
+        21: u'separator',  # Separator
+        22: u'tool bar',  # ToolBar
+        23: u'status nar',  # StatusBar
+        24: u'table',  # Table
+        25: u'column header',  # ColumnHeader
+        26: u'row header',  # RowHeader
+        27: u'column',  # Column
+        28: u'row',  # Row
+        29: u'cell',  # Cell
+        30: u'link',  # Link
+        31: u'help balloon',  # HelpBalloon
+        32: u'character',  # Character
+        33: u'list',  # List
+        34: u'list item',  # ListItem
+        35: u'outline',  # Outline
+        36: u'outline item',  # OutlineItem
+        37: u'page tab',  # PageTab
+        38: u'property page',  # PropertyPage
+        39: u'indicator',  # Indicator
+        40: u'graphic',  # Graphic
+        41: u'text',  # Text
+        42: u'editable text',  # EditableText
+        43: u'push button',  # PushButton
+        44: u'check box',  # CheckBox
+        45: u'radio button',  # RadioButton
+        46: u'combo box',  # ComboBox
+        47: u'drop down',  # DropDown
+        48: u'progress bar',  # ProgressBar
+        49: u'dial',  # Dial
+        50: u'hotKey field',  # HotKeyField
+        51: u'slider',  # Slider
+        52: u'spin box',  # SpinBox
+        53: u'diagram',  # Diagram
+        54: u'animation',  # Animation
+        55: u'equation',  # Equation
+        56: u'drop down button',  # DropDownButton
+        57: u'menu button',  # MenuButton
+        58: u'grid drop down button',  # GridDropDownButton
+        59: u'white space',  # WhiteSpace
+        60: u'page tab list',  # PageTabList
+        61: u'clock',  # Clock
+        62: u'split button',  # SplitButton
+        63: u'ip address',  # IPAddress
+        64: u'outline button'  # OutlineButton
     }
 
     _mouse = WinMouse()
@@ -291,10 +288,12 @@ class WinUIElement(IElement):
         obj_child_id.value = self._i_object_id
 
         obj_name = comtypes.automation.BSTR()
-
-        self._i_accessible._IAccessible__com__get_accName(
-            obj_child_id, ctypes.byref(obj_name))
-        result = obj_name.value or ''
+        try:
+            self._i_accessible._IAccessible__com__get_accName(
+                obj_child_id, ctypes.byref(obj_name))
+            result = obj_name.value or ''
+        except _ctypes.COMError:
+            result = ""
 
         return replace_inappropriate_symbols(result)
 
@@ -392,7 +391,7 @@ class WinUIElement(IElement):
         return result
 
     @property
-    def get_role_name(self):
+    def get_acc_role_name(self):
         return self._acc_role_name_map.get(self.get_role, 'unknown')
 
     @property
@@ -403,47 +402,11 @@ class WinUIElement(IElement):
     def get_full_description(self):
         return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_FullDescriptionPropertyId)
 
-    @property
     def get_class_name(self):
         return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_ClassNamePropertyId)
 
     def get_acc_children_elements(self):
-        ichild_start = 0
-        cc_children = self._i_accessible.accChildCount
-        pc_obtained = c_long()
-        variant_array_type = VARIANT * self._i_accessible.accChildCount
-        rgvar_children = variant_array_type()
-        res = ctypes.oledll.oleacc.AccessibleChildren(
-            self._i_accessible, ichild_start, cc_children, byref(rgvar_children), byref(pc_obtained))
-        comtypes.CoUninitialize()
-        if res == S_OK:
-            children_elements = []
-
-            for child in rgvar_children:
-                # Child is IAccessible
-                if child.vt == comtypes.automation.VT_DISPATCH:
-                    acc = WinUIElement(child.value.QueryInterface(comtypes.gen.Accessibility.IAccessible),0)
-                    children_elements.append(acc)
-                # Child is Simple Element
-                elif child.vt == comtypes.automation.VT_I4:
-                    acc = WinUIElement(self._i_accessible, child.value)
-                    children_elements.append(acc)
-            return children_elements
-        else:
-            raise ValueError("Can't get accessible children")
-
-    def _wrap_simple_element(self, accptr, childid):
-        """
-        Associate simple element and parent accessible object
-        """
-        if accptr not in self._simple_elements:
-            self._simple_elements[accptr] = [childid]
-        else:
-            self._simple_elements[accptr].append(childid)
-
-    def __iter__(self):
-        if self._i_object_id > 0:
-            raise StopIteration()
+        accChildren = []
 
         obj_acc_child_array = (comtypes.automation.VARIANT *
                                self._i_accessible.accChildCount)()
@@ -459,10 +422,11 @@ class WinUIElement(IElement):
         for i in range(obj_acc_child_count.value):
             obj_acc_child = obj_acc_child_array[i]
             if obj_acc_child.vt == comtypes.automation.VT_DISPATCH:
-                yield WinUIElement(obj_acc_child.value.QueryInterface(
-                    comtypes.gen.Accessibility.IAccessible), 0)
+                accChildren.append(WinUIElement(obj_acc_child.value.QueryInterface(
+                    comtypes.gen.Accessibility.IAccessible), 0))
             else:
-                yield WinUIElement(self._i_accessible, obj_acc_child.value)
+                accChildren.append(WinUIElement(self._i_accessible, obj_acc_child.value))
+        return accChildren
 
     def is_object_exists(self, **kwargs):
         try:
