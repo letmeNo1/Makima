@@ -5,15 +5,15 @@ import comtypes.client
 from comtypes.gen._944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0 import IRawElementProviderSimple
 
 from helper.operation import initialize_app_ref_for_win
-from windows.utils.find_ui_element import find_element_by_automation_id_by_wait
 
-hWnd = ctypes.windll.user32.FindWindowW(NULL, "Calculator")
+hWnd = ctypes.windll.user32.FindWindowW(NULL, "RCT UWP")
 
 calculator = initialize_app_ref_for_win(hWnd)
 # calculator.AccessibleChildren()
 aa = []
 
-print(find_element_by_automation_id_by_wait(4000,calculator,"CalculatorResults").get_acc_location)
+calculator.find_element_by_image_by_wait("C:\\Users\hanhuang\\OneDrive - GN Store Nord\\Desktop\\0002.png").click()
+# calculator.find_element_by_name_by_wait("Jabra PanaCast 20").click()
 # print(calculator.get_acc_children_elements()[4].get_acc_children_elements()[1].get_acc_children_elements()[3].get_acc_children_elements()[1].get_acc_children_elements()[1].get_acc_children_elements()[1].get_acc_children_elements()[1].get_acc_children_elements()[1].get_automation_id)
 #
 # aaa = calculator.get_acc_children_elements()[3]

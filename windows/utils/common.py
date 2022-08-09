@@ -35,7 +35,7 @@ def replace_inappropriate_symbols(text):
     return text
 
 
-def verify_xy_coordinates(cls, x, y):
+def verify_xy_coordinates(x, y):
     """
     Verifies that x and y is instance of int otherwise raises exception.
 
@@ -47,7 +47,7 @@ def verify_xy_coordinates(cls, x, y):
             'x and y arguments should hold int coordinates.')
 
 
-def verify_mouse_button_name(cls, button_name, supported_names):
+def verify_mouse_button_name(button_name, supported_names):
     """
     Verifies that button name is supported otherwise raises exception.
 

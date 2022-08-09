@@ -12,6 +12,8 @@ from comtypes.hresult import S_OK
 from windows.call_win_api import i_accessible_ex
 from windows.call_win_api.i_element import IElement
 from windows.utils.common import replace_inappropriate_symbols
+from windows.utils.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
+    find_element_by_image
 from windows.utils.mouse import WinMouse
 
 comtypes.client.GetModule('oleacc.dll')
@@ -206,33 +208,46 @@ class WinUIElement(IElement):
         else:
             return self._i_accessible.accSelect(i_selection)
 
-    def click(self, x_offset=0, y_offset=0):
-        x, y, w, h = self.acc_location
-        x += x_offset if x_offset is not None else w / 2
-        y += y_offset if y_offset is not None else h / 2
-
+    def click(self, x_offset=None, y_offset=None):
+        if x_offset is not None:
+            x = x_offset
+            y = y_offset
+        else:
+            x, y, w, h = self.get_acc_location
+            x += w / 2
+            y += h / 2
         self._mouse.click(x, y)
 
-    def right_click(self, x_offset=0, y_offset=0):
-        x, y, w, h = self.acc_location
-        x += x_offset if x_offset is not None else w / 2
-        y += y_offset if y_offset is not None else h / 2
-
+    def right_click(self, x_offset=None, y_offset=None):
+        if x_offset is not None:
+            x = x_offset
+            y = y_offset
+        else:
+            x, y, w, h = self.get_acc_location
+            x += w / 2
+            y += h / 2
         self._mouse.click(x, y, self._mouse.RIGHT_BUTTON)
 
-    def double_click(self, x_offset=0, y_offset=0):
-        x, y, w, h = self.acc_location
-        x += x_offset if x_offset is not None else w / 2
-        y += y_offset if y_offset is not None else h / 2
-
+    def double_click(self, x_offset=None, y_offset=None):
+        if x_offset is not None:
+            x = x_offset
+            y = y_offset
+        else:
+            x, y, w, h = self.get_acc_location
+            x += w/2
+            y += h/2
         self._mouse.double_click(x, y)
 
-    def drag_to(self, x, y, x_offset=None, y_offset=None, smooth=True):
-        el_x, el_y, el_w, el_h = self.acc_location
-        el_x += x_offset if x_offset is not None else el_w / 2
-        el_y += y_offset if y_offset is not None else el_h / 2
+    def drag_to(self,  x2, y2, x_offset=None, y_offset=None, smooth=True):
+        if x_offset is not None:
+            x = x_offset
+            y = y_offset
+        else:
+            x, y, w, h = self.get_acc_location
+            x += w / 2
+            y += h / 2
 
-        self._mouse.drag(el_x, el_y, x, y, smooth)
+        self._mouse.drag(x, y, x2, y2, smooth)
 
     @property
     def proc_id(self):
@@ -466,3 +481,30 @@ class WinUIElement(IElement):
                         return ia_ex_service.GetPropertyValue(identifiers)
             except Exception:
                 pass
+
+    def find_element_by_image_by_wait(self, path, distance=0.4, timeout=5000):
+        return wait_function(timeout, find_element_by_image, path, distance, method="image")
+
+    def find_element_by_automation_id_by_wait(self, automation_id, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  automation_id=automation_id)
+
+    def find_elements_by_automation_id_by_wait(self, automation_id, timeout=5000):
+        return wait_function(timeout, find_elements_by_query, self, automation_id=automation_id)
+
+    def find_element_by_name_by_wait(self, name, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  name=name)
+
+    def find_elements_by_name_by_wait(self, name, timeout=5000):
+        return wait_function(timeout, find_elements_by_query, self,  name=name)
+
+    def find_element_by_role_name_by_wait(self, role_name, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self, role_name=role_name)
+
+    def find_elements_by_role_name_by_wait(self, role_name, timeout=5000):
+        return wait_function(timeout, find_elements_by_query, self, role_name=role_name)
+
+    def find_element_by_class_name_by_wait(self, class_name, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  class_name=class_name)
+
+    def find_elements_by_class_name_by_wait(self, class_name, timeout=5000):
+        return wait_function(timeout, find_elements_by_query, self,  class_name=class_name)
