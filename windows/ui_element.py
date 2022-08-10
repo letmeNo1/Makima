@@ -488,11 +488,23 @@ class WinUIElement(IElement):
     def find_element_by_automation_id_by_wait(self, automation_id, timeout=5000):
         return wait_function(timeout, find_element_by_query, self,  automation_id=automation_id)
 
+    def find_next_element_by_automation_id_by_wait(self, automation_id, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  automation_id_next=automation_id)
+
+    def find_last_element_by_automation_id_by_wait(self, automation_id, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  automation_id_last=automation_id)
+
     def find_elements_by_automation_id_by_wait(self, automation_id, timeout=5000):
         return wait_function(timeout, find_elements_by_query, self, automation_id=automation_id)
 
     def find_element_by_name_by_wait(self, name, timeout=5000):
         return wait_function(timeout, find_element_by_query, self,  name=name)
+
+    def find_next_element_by_name_by_wait(self, name, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  name_next=name)
+
+    def find_last_element_by_name_by_wait(self, name, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  name_last=name)
 
     def find_elements_by_name_by_wait(self, name, timeout=5000):
         return wait_function(timeout, find_elements_by_query, self,  name=name)
@@ -500,11 +512,24 @@ class WinUIElement(IElement):
     def find_element_by_role_name_by_wait(self, role_name, timeout=5000):
         return wait_function(timeout, find_element_by_query, self, role_name=role_name)
 
+    def find_last_element_by_role_name_by_wait(self, role_name, timeout=5000):
+        return wait_function(timeout, find_elements_by_query, self, role_name_last=role_name)
+
+    def find_next_element_by_role_name_by_wait(self, role_name, timeout=5000):
+        return wait_function(timeout, find_elements_by_query, self, role_name_next=role_name)
+
     def find_elements_by_role_name_by_wait(self, role_name, timeout=5000):
         return wait_function(timeout, find_elements_by_query, self, role_name=role_name)
 
-    def find_element_by_class_name_by_wait(self, class_name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  class_name=class_name)
+    def find_last_element_by_class_name_by_wait(self, class_name, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self, class_name_last=class_name)
+
+    def find_next_element_by_class_name_by_wait(self, class_name, timeout=5000):
+        return wait_function(timeout, find_element_by_query, self,  class_name_next=class_name)
 
     def find_elements_by_class_name_by_wait(self, class_name, timeout=5000):
         return wait_function(timeout, find_elements_by_query, self,  class_name=class_name)
+
+    def release(self):
+        self._i_accessible.Release()
+

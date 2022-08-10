@@ -5,6 +5,7 @@ from time import sleep
 from windows.utils import common
 from windows.call_win_api.i_mouse import IMouse
 
+
 class WinMouse(IMouse):
     _MOUSEEVENTF_MOVE = 0x0001  # mouse move
     _MOUSEEVENTF_LEFTDOWN = 0x0002  # left button down
@@ -121,7 +122,7 @@ class WinMouse(IMouse):
     def press_button(self, x, y, button_name=LEFT_BUTTON):
         common.verify_xy_coordinates(x, y)
         common.verify_mouse_button_name(button_name,
-                                          self._SUPPORTED_BUTTON_NAMES)
+                                        self._SUPPORTED_BUTTON_NAMES)
 
         self.move(x, y)
         self._do_event(
@@ -130,7 +131,7 @@ class WinMouse(IMouse):
 
     def release_button(self, button_name=LEFT_BUTTON):
         common.verify_mouse_button_name(button_name,
-                                          self._SUPPORTED_BUTTON_NAMES)
+                                        self._SUPPORTED_BUTTON_NAMES)
 
         self._do_event(
             self._compose_mouse_event(button_name, press=False, release=True),
@@ -139,7 +140,7 @@ class WinMouse(IMouse):
     def click(self, x, y, button_name=LEFT_BUTTON):
         common.verify_xy_coordinates(x, y)
         common.verify_mouse_button_name(button_name,
-                                          self._SUPPORTED_BUTTON_NAMES)
+                                        self._SUPPORTED_BUTTON_NAMES)
         self.move(x, y, False)
         self._do_event(
             self._compose_mouse_event(button_name, press=True, release=True),
@@ -148,7 +149,7 @@ class WinMouse(IMouse):
     def double_click(self, x, y, button_name=LEFT_BUTTON):
         common.verify_xy_coordinates(x, y)
         common.verify_mouse_button_name(button_name,
-                                          self._SUPPORTED_BUTTON_NAMES)
+                                        self._SUPPORTED_BUTTON_NAMES)
 
         self.move(x, y)
         self._do_event(

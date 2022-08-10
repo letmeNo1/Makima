@@ -21,6 +21,10 @@ class Stack(object):
         """pop item"""
         return self.items.pop()
 
+    def reverse(self):
+        """reverse item"""
+        return self.items.reverse()
+
     def peek(self):
         """pop item"""
         return self.items[len(self.items) - 1]
