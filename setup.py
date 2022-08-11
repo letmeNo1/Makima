@@ -9,7 +9,7 @@ def parse_requirements(filename):
 
 setuptools.setup(
     name="Makima",
-    version="0.0.8",
+    version="0.1.0",
     author="hank.huang",
     author_email="hank.huang550@gmail.com",
     description="A cross-platform desktop automated testing framework.",
@@ -17,7 +17,6 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/letmeNo1/Makima",
     packages=setuptools.find_packages(),
-    install_requires=parse_requirements('requirements.txt'),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -6,9 +6,10 @@ from makima.openCV.lof import LOF
 
 
 def kmeans_run(path, distance=0.4):
-    img = pyautogui.screenshot()
 
+    img = pyautogui.screenshot()
     img1 = np.array(img)
+    print(img1)
     img2 = cv2.imread(path,
                       0)
     # 初始化SIFT选择器
@@ -21,14 +22,13 @@ def kmeans_run(path, distance=0.4):
     # FLANN 参数
     FLANN_INDEX_KDTREE = 0
     index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
-    search_params = dict(checks=50)  # or pass empty dictionary
+    search_params = dict(checks=50)
 
     flann = cv2.FlannBasedMatcher(index_params, search_params)
 
     # 使用基于FLANN的匹配器, 筛选符合条件的坐标
     matches = flann.knnMatch(des1, des2, k=2)
 
-    # ratio test as per Lowe's paper
     result = []
     for i, (m, n) in enumerate(matches):
         # distance越小匹配度越高
