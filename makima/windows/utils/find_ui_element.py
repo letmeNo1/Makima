@@ -1,4 +1,4 @@
-from openCV.kmeans_run import kmeans_run
+from makima.openCV.kmeans_run import kmeans_run
 from .stack import Stack
 import time
 
@@ -13,8 +13,7 @@ def wait_function(timeout, func, *args, **kwargs):
             finish_time = time.time() - time_started_sec
             # print("Found element in {} s".format(finish_time))
             return result
-        raise TimeoutError
-
+    raise TimeoutError
 
 def find_element_by_image(path, distance, **method):
     for key, value in method.items():
@@ -40,16 +39,14 @@ def find_element_by_query(root_element, **query):
         query_string = value
 
     while all_node.is_not_empty():
-        if "next" in query_method:
-            print("next")
-            all_node.reverse()
         element = all_node.pop()
+
         elements_list = element.get_acc_children_elements()
 
         if "automation_id" in query_method:
             element_attribute = element.get_automation_id
 
-        elif "name" in query_method:
+        elif "acc_name" in query_method:
             element_attribute = element.get_acc_name
 
         elif "description" in query_method:
@@ -64,15 +61,15 @@ def find_element_by_query(root_element, **query):
         elif "full_description" in query_method:
             element_attribute = element.get_full_description
 
-        elif "class_name" in query_method:
-            element_attribute = element.get_class_nam
-
         if element_attribute == query_string:
-            if "last" in query_method or "next" in query_method:
+            if "last" in query_method:
                 result = all_node.pop()
+            elif "next" in query_method:
+                result = last_element
             else:
                 result = element
 
+        last_element = element
         if len(elements_list) > 0:
             for child_element in elements_list:
                 if child_element._i_object_id == 0:
@@ -97,7 +94,7 @@ def find_elements_by_query(root_element, **query):
         if "automation_id" in query_method:
             element_attribute = element.get_automation_id
 
-        elif "name" in query_method:
+        elif "acc_name" in query_method:
             element_attribute = element.get_acc_name
 
         elif "description" in query_method:
@@ -111,9 +108,6 @@ def find_elements_by_query(root_element, **query):
 
         elif "full_description" in query_method:
             element_attribute = element.get_full_description
-
-        elif "class_name" in query_method:
-            element_attribute = element.get_class_nam
 
         if element_attribute == query_string:
             result.append(element)

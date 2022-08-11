@@ -2,11 +2,9 @@ import ctypes
 import time
 
 from win32con import NULL
-from helper.operation import initialize_app_ref_for_win
-from windows.utils.keyboard import WinKeyboard
+from makima.helper.operation import initialize_app_ref_for_win
 
-# desktop = ctypes.windll.user32.GetDesktopWindow()
-
+from makima.windows.utils.keyboard import WinKeyboard
 
 win_keyboard = WinKeyboard()
 
@@ -34,11 +32,11 @@ calculator.find_element_by_automation_id_by_wait("CameraList").click()
 # ctypes.windll.user32.SetForegroundWindow(hWnd)
 calculator.find_element_by_name_by_wait("Jabra PanaCast 20").click()
 
-for _format in format_list:
-    calculator.find_element_by_automation_id_by_wait("FormatList").click()
-    calculator.find_element_by_name_by_wait(_format).click()
-    time.sleep(10)
-    FPS = calculator.find_last_element_by_name_by_wait("Jitter (ms):").get_acc_name
-    print(_format + "'s FPS is " + FPS)
+calculator.find_element_by_automation_id_by_wait("FormatList").click()
+
+print(calculator.find_element_by_class_name_by_wait("ComboBoxItem", 10000))
+
+# print(calculator.find_element_by_name_by_wait("3840 x 2160 @ 15fps MJPG"))
+# print(_format + "'s FPS is " + FPS)
 
 calculator.release()

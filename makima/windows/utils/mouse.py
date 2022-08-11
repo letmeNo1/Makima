@@ -2,8 +2,8 @@ import ctypes
 import ctypes.wintypes
 from time import sleep
 
-from windows.utils import common
-from windows.call_win_api.i_mouse import IMouse
+from makima.windows.utils import common
+from makima.windows.call_win_api.i_mouse import IMouse
 
 
 class WinMouse(IMouse):
@@ -158,6 +158,11 @@ class WinMouse(IMouse):
         self._do_event(
             self._compose_mouse_event(button_name, press=True, release=True),
             0, 0, 0, 0)
+
+    def wheel(self, x, y, movement):
+        common.verify_xy_coordinates(x, y)
+        self.move(x, y, False)
+        self._do_event(self._MOUSEEVENTF_WHEEL, x, y, movement, 0)
 
     def get_position(self):
         obj_point = ctypes.wintypes.POINT()

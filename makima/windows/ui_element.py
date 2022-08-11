@@ -7,17 +7,15 @@ import _ctypes
 import comtypes.client
 from comtypes import automation
 from comtypes.automation import *
-from comtypes.hresult import S_OK
 
-from windows.call_win_api import i_accessible_ex
-from windows.call_win_api.i_element import IElement
-from windows.utils.common import replace_inappropriate_symbols
-from windows.utils.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
+from makima.windows.call_win_api import i_accessible_ex
+from makima.windows.call_win_api.i_element import IElement
+from makima.windows.utils.common import replace_inappropriate_symbols
+from makima.windows.utils.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
     find_element_by_image
-from windows.utils.mouse import WinMouse
+from makima.windows.utils.mouse import WinMouse
 
 comtypes.client.GetModule('oleacc.dll')
-comtypes.CoInitializeEx()
 
 CO_E_OBJNOTCONNECTED = -2147220995
 
@@ -465,6 +463,17 @@ class WinUIElement(IElement):
                     in (CO_E_OBJNOTCONNECTED,):
                 return 0
 
+    def _check_state(self, state):
+        """
+        Checks state.
+
+        :param int state: state flag.
+
+        :rtype: bool
+        :return: bool flag indicator.
+        """
+        return bool(self.get_acc_state & state)
+
     def get_property_value(self, identifiers):
         p_service = self._i_accessible.QueryInterface(comtypes.IServiceProvider)
 
@@ -498,16 +507,16 @@ class WinUIElement(IElement):
         return wait_function(timeout, find_elements_by_query, self, automation_id=automation_id)
 
     def find_element_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  name=name)
+        return wait_function(timeout, find_element_by_query, self,  acc_name=name)
 
     def find_next_element_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  name_next=name)
+        return wait_function(timeout, find_element_by_query, self,  acc_name_next=name)
 
     def find_last_element_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  name_last=name)
+        return wait_function(timeout, find_element_by_query, self,  acc_name_last=name)
 
     def find_elements_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_elements_by_query, self,  name=name)
+        return wait_function(timeout, find_elements_by_query, self,  acc_name=name)
 
     def find_element_by_role_name_by_wait(self, role_name, timeout=5000):
         return wait_function(timeout, find_element_by_query, self, role_name=role_name)
@@ -520,15 +529,6 @@ class WinUIElement(IElement):
 
     def find_elements_by_role_name_by_wait(self, role_name, timeout=5000):
         return wait_function(timeout, find_elements_by_query, self, role_name=role_name)
-
-    def find_last_element_by_class_name_by_wait(self, class_name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self, class_name_last=class_name)
-
-    def find_next_element_by_class_name_by_wait(self, class_name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  class_name_next=class_name)
-
-    def find_elements_by_class_name_by_wait(self, class_name, timeout=5000):
-        return wait_function(timeout, find_elements_by_query, self,  class_name=class_name)
 
     def release(self):
         self._i_accessible.Release()

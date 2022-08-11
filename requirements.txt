@@ -1,0 +1,6 @@
+comtypes==1.1.13
+numpy==1.23.1
+opencv-python==4.6.0.66
+PyAutoGUI==0.9.53
+matplotlib==3.5.2
+sklearn==0.0

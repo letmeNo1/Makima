@@ -1,4 +1,4 @@
-from windows.utils.mouse import WinMouse
+from makima.windows.utils.mouse import WinMouse
 
 
 class ImageObject:

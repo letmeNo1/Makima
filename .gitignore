@@ -1,3 +1,6 @@
 
-windows/__pycache__/
+makima/windows/__pycache__/
 *.pyc
+Makima.egg-info/
+build/
+dist/

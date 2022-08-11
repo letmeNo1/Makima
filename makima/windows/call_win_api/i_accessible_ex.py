@@ -2,10 +2,9 @@ import ctypes.wintypes
 
 import comtypes
 from comtypes import GUID, IUnknown, COMMETHOD, POINTER, helpstring
-from comtypes.gen._1EA4DBF0_3C3B_11CF_810C_00AA00389B71_0_1_1 import IAccessible
-from comtypes.gen._944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0 import IRawElementProviderSimple
 
 HRESULT = ctypes.wintypes.DWORD
+comtypes.client.GetModule('oleacc.dll')
 comtypes.client.GetModule('uiautomationcore.dll')
 
 class IAccessibleEx(IUnknown):
@@ -30,7 +29,7 @@ _methods_ = [
         [helpstring('Method GetIAccessiblePair')],
         HRESULT,
         'GetIAccessiblePair',
-        (['out'], POINTER(POINTER(IAccessible)), 'ppAcc'),
+        (['out'], POINTER(POINTER(comtypes.gen.Accessibility.IAccessible)), 'ppAcc'),
         (['out'], ctypes.c_ulong, 'pidChild'),
     ),
     COMMETHOD(
@@ -43,7 +42,7 @@ _methods_ = [
         [helpstring('Method ConvertReturnedElement')],
         HRESULT,
         'ConvertReturnedElement',
-        (['in'], POINTER(IRawElementProviderSimple), 'pIn'),
+        (['in'], POINTER(comtypes.gen.UIAutomationClient.IRawElementProviderSimple), 'pIn'),
         (
             ['out'],
             POINTER(POINTER(IAccessibleEx)),
