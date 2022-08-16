@@ -1,21 +1,4 @@
-#!/usr/bin/env python
-
-#    Copyright (c) 2014-2017 Max Beloborodko.
-#
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
-#    a copy of the License at
-#
-#         http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#    License for the specific language governing permissions and limitations
-#    under the License.
-
-__author__ = 'f1ashhimself@gmail.com'
-
+import abc
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 
@@ -26,19 +9,19 @@ class IMouse(object):
 
     __metaclass__ = ABCMeta
 
-    @abstractproperty
+    @abc.abstractmethod
     def LEFT_BUTTON(self):
         """
         Constant for left mouse button.
         """
 
-    @abstractproperty
+    @abc.abstractmethod
     def RIGHT_BUTTON(self):
         """
         Constant for right mouse button.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def move(self, x, y, smooth=True):
         """
         Move the mouse to the specified coordinates.
@@ -48,7 +31,7 @@ class IMouse(object):
         :param bool smooth: indicates is it needed to simulate smooth movement.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def drag(self, x1, y1, x2, y2, smooth=True):
         """
         Drags the mouse to the specified coordinates.
@@ -60,7 +43,7 @@ class IMouse(object):
         :param bool smooth: indicates is it needed to simulate smooth movement.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def press_button(self, x, y, button_name=LEFT_BUTTON):
         """
         Presses mouse button as dictated by coordinates and button name.
@@ -71,7 +54,7 @@ class IMouse(object):
         of: 'b1c' - left button or 'b3c' - right button.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def release_button(self, button_name=LEFT_BUTTON):
         """
         Releases mouse button by button name.
@@ -80,7 +63,7 @@ class IMouse(object):
         of: 'b1c' - left button or 'b3c' - right button.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def click(self, x, y, button_name=LEFT_BUTTON):
         """
         Clicks as dictated by coordinates and button name.
@@ -91,7 +74,7 @@ class IMouse(object):
         of: 'b1c' - left button or 'b3c' - right button.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def double_click(self, x, y, button_name=LEFT_BUTTON):
         """
         Double-clicks as dictated by coordinates and button name.
@@ -102,7 +85,7 @@ class IMouse(object):
         of: 'b1c' - left button or 'b3c' - right button.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_position(self):
         """
         Returns current mouse cursor position.

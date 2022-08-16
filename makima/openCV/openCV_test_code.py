@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import pyautogui
+from matplotlib import pyplot as plt
 from sklearn.neighbors import LocalOutlierFactor
 
 
@@ -21,7 +22,7 @@ img = pyautogui.screenshot()
 print(img)
 img1 = np.array(img)
 # img1 = cv2.imread('C:\\Users\\hanhuang\\OneDrive - GN Store Nord\\Desktop\\001.png',0)          # queryImage
-img2 = cv2.imread('C:\\Users\hanhuang\\OneDrive - GN Store Nord\\Desktop\\0002.png',0) # trainImage
+img2 = cv2.imread('C:\\Users\\hanhuang\\002.png',0) # trainImage
 
 # Initiate SIFT detector
 sift = cv2.SIFT_create()
@@ -84,4 +85,3 @@ image = cv2.circle(img1, center_coordinates, radius, color, thickness)
 
 # Displaying the image
 plt.imshow(image),plt.show()
-

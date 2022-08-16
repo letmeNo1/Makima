@@ -92,6 +92,37 @@ class WinUIElement(IElement):
         64: u'outline button'  # OutlineButton
     }
 
+    _control_type_id_map = {
+        40043: 'UIA_SayAsInterpretAsAttributeId',  # Constant c_int
+        60001: 'AnnotationType_SpellingError',  # Constant c_int
+        50000: 'UIAButtonControlTypeId',  # Constant c_int
+        50002: 'UIACheckBoxControlTypeId',  # Constant c_int
+        50003: 'UIAComboBoxControlTypeId',  # Constant c_int
+        50004: 'UIAEditControlTypeId',  # Constant c_int
+        50005: 'UIAHyperlinkControlTypeId',  # Constant c_int
+        50006: 'UIAImageControlTypeId',  # Constant c_int
+        50007: 'UIAListItemControlTypeId',  # Constant c_int
+        50008: 'UIAListControlTypeId',  # Constant c_int
+        50009: 'UIAMenuControlTypeId',  # Constant c_int
+        50010: 'UIAMenuBarControlTypeId',  # Constant c_int
+        50011: 'UIAMenuItemControlTypeId',  # Constant c_int
+        50012: 'UIAProgressBarControlTypeId',  # Constant c_int
+        50013: 'UIARadioButtonControlTypeId',  # Constant c_int
+        50014: 'UIAScrollBarControlTypeId',  # Constant c_int
+        50015: 'UIASliderControlTypeId',  # Constant c_int
+        50016: 'UIASpinnerControlTypeId',  # Constant c_int
+        50017: 'UIAStatusBarControlTypeId',  # Constant c_int
+        50018: 'UIATabControlTypeId',  # Constant c_int
+        50019: 'UIATabItemControlTypeId',  # Constant c_int
+        50020: 'UIATextControlTypeId',  # Constant c_int
+        50021: 'UIAToolBarControlTypeId',  # Constant c_int
+        50022: 'UIAToolTipControlTypeId',  # Constant c_int
+        50023: 'UIATreeControlTypeId',  # Constant c_int
+        50024: 'UIATreeItemControlTypeId',  # Constant c_int
+        50025: 'UIACustomControlTypeId',  # Constant c_int
+        50026: 'UIAGroupControlTypeId'  # Constant c_int
+    }
+
     _mouse = WinMouse()
 
     class _StateFlag(object):
@@ -232,11 +263,11 @@ class WinUIElement(IElement):
             y = y_offset
         else:
             x, y, w, h = self.get_acc_location
-            x += w/2
-            y += h/2
+            x += w / 2
+            y += h / 2
         self._mouse.double_click(x, y)
 
-    def drag_to(self,  x2, y2, x_offset=None, y_offset=None, smooth=True):
+    def drag_to(self, x2, y2, x_offset=None, y_offset=None, smooth=True):
         if x_offset is not None:
             x = x_offset
             y = y_offset
@@ -412,9 +443,15 @@ class WinUIElement(IElement):
         return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_AutomationIdPropertyId)
 
     @property
+    def get_control_type(self):
+        return self._control_type_id_map.get(
+            self.get_property_value(comtypes.gen.UIAutomationClient.UIA_ControlTypePropertyId), 'unknown')
+
+    @property
     def get_full_description(self):
         return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_FullDescriptionPropertyId)
 
+    @property
     def get_class_name(self):
         return self.get_property_value(comtypes.gen.UIAutomationClient.UIA_ClassNamePropertyId)
 
@@ -494,42 +531,30 @@ class WinUIElement(IElement):
     def find_element_by_image_by_wait(self, path, distance=0.4, timeout=5000):
         return wait_function(timeout, find_element_by_image, path, distance, method="image")
 
-    def find_element_by_automation_id_by_wait(self, automation_id, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  automation_id=automation_id)
+    '''
+    query:
+        automation_id=automation id
+        acc_description = acc description
+        acc_name=acc name
+        acc_role_name=role name
+        acc_value=acc value
+        class_name=class name
+        control_type=control type
+        full_description=full description
+    
+    '''
 
-    def find_next_element_by_automation_id_by_wait(self, automation_id, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  automation_id_next=automation_id)
+    def find_element_by_wait(self, timeout=5000, **query):
+        return wait_function(timeout, find_element_by_query, self,  **query)
 
-    def find_last_element_by_automation_id_by_wait(self, automation_id, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  automation_id_last=automation_id)
+    def find_next_element_by_wait(self, timeout=5000, **query):
+        return wait_function(timeout, find_element_by_query, self, "next",  **query)
 
-    def find_elements_by_automation_id_by_wait(self, automation_id, timeout=5000):
-        return wait_function(timeout, find_elements_by_query, self, automation_id=automation_id)
+    def find_last_element_by_wait(self, timeout=5000, **query):
+        return wait_function(timeout, find_element_by_query, self, "last", **query)
 
-    def find_element_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  acc_name=name)
-
-    def find_next_element_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  acc_name_next=name)
-
-    def find_last_element_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self,  acc_name_last=name)
-
-    def find_elements_by_name_by_wait(self, name, timeout=5000):
-        return wait_function(timeout, find_elements_by_query, self,  acc_name=name)
-
-    def find_element_by_role_name_by_wait(self, role_name, timeout=5000):
-        return wait_function(timeout, find_element_by_query, self, role_name=role_name)
-
-    def find_last_element_by_role_name_by_wait(self, role_name, timeout=5000):
-        return wait_function(timeout, find_elements_by_query, self, role_name_last=role_name)
-
-    def find_next_element_by_role_name_by_wait(self, role_name, timeout=5000):
-        return wait_function(timeout, find_elements_by_query, self, role_name_next=role_name)
-
-    def find_elements_by_role_name_by_wait(self, role_name, timeout=5000):
-        return wait_function(timeout, find_elements_by_query, self, role_name=role_name)
+    def find_elements_by_wait(self,  timeout=5000, **query):
+        return wait_function(timeout, find_elements_by_query, self,  **query)
 
     def release(self):
         self._i_accessible.Release()
-

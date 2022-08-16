@@ -1,5 +1,4 @@
 import re
-import sys
 
 
 def convert_wildcard_to_regex(wildcard):

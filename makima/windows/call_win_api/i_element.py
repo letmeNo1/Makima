@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import abc
-from abc import ABCMeta, abstractmethod, abstractproperty
 import xml.dom.minidom
+from abc import ABCMeta, abstractmethod
 
 from comtypes import IUnknown
 
