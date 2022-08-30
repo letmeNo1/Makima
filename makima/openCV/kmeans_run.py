@@ -1,10 +1,10 @@
-import numpy as np
 import cv2
-import pyautogui
+import numpy as np
+import pyscreeze
 
 
 def kmeans_run(path, distance=0.4):
-    img = pyautogui.screenshot()
+    img = pyscreeze.screenshot()
     img1 = np.array(img)
     print(img1)
     img2 = cv2.imread(path,
