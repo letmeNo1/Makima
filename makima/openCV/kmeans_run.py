@@ -2,11 +2,8 @@ import numpy as np
 import cv2
 import pyautogui
 
-from makima.openCV.lof import LOF
-
 
 def kmeans_run(path, distance=0.4):
-
     img = pyautogui.screenshot()
     img1 = np.array(img)
     print(img1)
@@ -29,14 +26,35 @@ def kmeans_run(path, distance=0.4):
     # 使用基于FLANN的匹配器, 筛选符合条件的坐标
     matches = flann.knnMatch(des1, des2, k=2)
 
-    result = []
+    good = []
     for i, (m, n) in enumerate(matches):
         # distance越小匹配度越高
         if m.distance < distance * n.distance:
-            result.append(kp1[m.queryIdx].pt)
+            good.append(m)
 
-    if not result or len(result)<2:
-        return None, None
+    if len(good) > 10:
+        # Gets the coordinates of the key points
+        src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+        dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+        # Compute the transformation matrix and MASK
+        M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+        h, w = img1.shape
+
+        # Use the transformation matrix to obtain the coordinates of the four corners of the original image after
+        # transformation
+        pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
+        dst = cv2.perspectiveTransform(pts, M)
+
+        # Get the coordinates of the lower right corner of the transformed image
+        x_of_point1_of_transform_image = [np.int32(dst)][0][0][0][0]
+        y_of_point1_of_transform_image = [np.int32(dst)][0][0][0][1]
+
+        # Get the coordinates of the lower right corner of the transformed image
+        x_of_point3_of_transform_image = [np.int32(dst)][0][2][0][0]
+        y_of_point3_of_transform_image = [np.int32(dst)][0][2][0][1]
+
+        x = (x_of_point3_of_transform_image + x_of_point1_of_transform_image) / 2
+        y = (y_of_point3_of_transform_image + y_of_point1_of_transform_image) / 2
+        return x, y
     else:
-        return LOF(result)
-
+        return None, None

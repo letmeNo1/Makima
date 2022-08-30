@@ -7,13 +7,16 @@ from ..image_object import ImageObject
 
 def wait_function(timeout, func, *args, **query):
     time_started_sec = time.time()
+    query_string = list(query.values())[0]
+    query_method = list(query.keys())[0]
     while time.time() < time_started_sec + timeout / 1000.0:
         result = func(*args, **query)
         if result is not None:
             finish_time = time.time() - time_started_sec
             # print("Found element in {} s".format(finish_time))
             return result
-    raise TimeoutError
+    error = "Can't find element/elements in %s s by %s = %s" % (timeout / 1000.0, query_method, query_string)
+    raise TimeoutError(error)
 
 
 def find_element_by_image(path, distance, **method):
