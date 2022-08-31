@@ -3,7 +3,7 @@ import re
 from ctypes import *
 from ctypes import wintypes
 from ctypes.wintypes import HWND, CHAR, LPSTR
-from logging import Logger
+
 
 
 def convert_wildcard_to_regex(wildcard):
@@ -62,6 +62,7 @@ def verify_mouse_button_name(button_name, supported_names):
         raise Exception(
             'Button name should be one of supported %s.' %
             repr(supported_names))
+
 
 def get_window_title(hwnd):
     """Get native window title."""

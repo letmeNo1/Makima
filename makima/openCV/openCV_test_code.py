@@ -5,24 +5,15 @@ from matplotlib import pyplot as plt
 from sklearn.neighbors import LocalOutlierFactor
 
 
-def LOF(data):
-    point_of_x = []
-    point_of_y = []
-    k = len(data) if len(data) < 6 else 6
-    clf = LocalOutlierFactor(n_neighbors=k, algorithm='auto', contamination=0.1, n_jobs=-1, novelty=False)
-    clf.fit_predict(data)
-    for index, outlier in enumerate(clf.negative_outlier_factor_):
-        if 1.1 > abs(outlier) > 0.9:
-            point_of_x.append(data[index][0])
-            point_of_y.append(data[index][1])
-    return [np.mean(point_of_x), np.mean(point_of_y)]
-
-
 # img = pyautogui.screenshot()
 # print(img)
 # img1 = np.array(img)
-img1 = cv2.imread('C:\\Users\\hanhuang\\002.png', 0)  # trainImage
-img2 = cv2.imread('C:\\Users\\hanhuang\\001.png', 0)  # trainImage
+img1 = cv2.imread('C:\\Users\\hanhuang\\1.png', 0)  # trainImage
+img2 = cv2.imread('C:\\Users\\hanhuang\\2.png', 0)  # trainImage
+
+
+img1 = img1[100:900, 50:1850]
+img2 = img2[100:900, 50:1850]
 
 # image = img1[100:900, 50:1850]
 # plt.imshow(image)
@@ -101,29 +92,44 @@ draw_params = dict(matchColor=(0, 255, 0),
                    matchesMask=matchesMask,
                    flags=0)
 
+output_image = cv2.drawKeypoints(img2, kp1, 0, (0, 0, 255),
+                                 flags=cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+
+# displaying the image with keypoints as the
+# output on the screen
+
+plt.imshow(output_image)
+
+# plotting image
+plt.show()
+
 img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
-
-window_name = 'Image'
-
-# Center coordinates
-center_coordinates = (int(x), int(y))
-print(center_coordinates)
-
-# Radius of circle
-radius = 20
-
-# Blue color in BGR
-color = (0, 0, 0)
-
-# Line thickness of 2 px
-thickness = 2
-
-print(x_of_point1_of_transform_image)
-# Using cv2.circle() method
-# Draw a circle with blue line borders of thickness of 2 px
-cv2.circle(img2, center_coordinates, 10, (255, 0, 0), 2)
-cv2.rectangle(img2, (x_of_point1_of_transform_image, y_of_point1_of_transform_image),
-              (x_of_point3_of_transform_image, y_of_point3_of_transform_image), (255, 0, 0), 2)  # 画大矩形
-image = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # 色彩空间转换
-cv2.imshow("绘制矩形", image)
+cv2.imshow("绘制矩形", img3)
 cv2.waitKey(100000)
+
+
+#
+# window_name = 'Image'
+#
+# # Center coordinates
+# center_coordinates = (int(x), int(y))
+# print(center_coordinates)
+#
+# # Radius of circle
+# radius = 20
+#
+# # Blue color in BGR
+# color = (0, 0, 0)
+#
+# # Line thickness of 2 px
+# thickness = 2
+#
+# print(x_of_point1_of_transform_image)
+# # Using cv2.circle() method
+# # Draw a circle with blue line borders of thickness of 2 px
+# cv2.circle(img2, center_coordinates, 10, (255, 0, 0), 2)
+# cv2.rectangle(img2, (x_of_point1_of_transform_image, y_of_point1_of_transform_image),
+#               (x_of_point3_of_transform_image, y_of_point3_of_transform_image), (255, 0, 0), 2)  # 画大矩形
+# image = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # 色彩空间转换
+# cv2.imshow("绘制矩形", image)
+# cv2.waitKey(100000)
