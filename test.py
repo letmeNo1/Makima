@@ -2,7 +2,11 @@ import re
 
 from makima.helper.operation import initialize_app_ref_for_win
 
-rct = initialize_app_ref_for_win("Calculator")
+rct = initialize_app_ref_for_win("Zoom")
 # print(rct.get_class_name)
-rct.find_element_by_wait(automation_id="num1Button").click()
-rct.find_element_by_wait(acc_name="Nine").click()
+# find_element_by_wait(rct, acc_name="Invite (Alt+I)").click()
+
+
+ss = ".*Start.*"
+print(re.match(ss, "Start a new meeting with video on"))
+

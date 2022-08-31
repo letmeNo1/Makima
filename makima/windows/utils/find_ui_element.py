@@ -32,7 +32,6 @@ def find_element_by_image(path, distance, **method):
 
 
 def find_element_by_query(use_re, *args, **query):
-    result_list = []
     all_node = Stack()
     all_node.push(args[0])
     result = None

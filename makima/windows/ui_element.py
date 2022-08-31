@@ -7,16 +7,18 @@ import comtypes.client
 from makima.windows.utils.find_ui_element import wait_function, find_element_by_query, find_elements_by_query
 from makima.windows.utils.mouse import WinMouse
 import comtypes.client
-from comtypes.gen import UIAutomationClient
+
 
 CO_E_OBJNOTCONNECTED = -2147220995
 UIAutomationCore = comtypes.client.GetModule("UIAutomationCore.dll")
 IUIAutomation = comtypes.client.CreateObject("{ff48dba4-60ef-4201-aa87-54103eef594e}",
                                              interface=UIAutomationCore.IUIAutomation)
 
-_IUIAutomation = comtypes.CoCreateInstance(UIAutomationClient.CUIAutomation._reg_clsid_,
-                                           interface=UIAutomationClient.IUIAutomation,
+_IUIAutomation = comtypes.CoCreateInstance(comtypes.gen.UIAutomationClient.CUIAutomation._reg_clsid_,
+                                           interface=comtypes.gen.UIAutomationClient.IUIAutomation,
                                            clsctx=comtypes.CLSCTX_INPROC_SERVER)
+
+UIAutomationClient = comtypes.gen.UIAutomationClient
 
 _control_type = {
     UIAutomationClient.UIA_ButtonControlTypeId: 'UIA_ButtonControlTypeId',
