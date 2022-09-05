@@ -94,40 +94,14 @@ e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("18
 ### Operation
    ***Support Mouse events, Combination keyboard events ：***
    
-       '''
-       support query:
-            automation_id=automation id
-            acc_description = acc description
-            acc_name=acc name
-            acc_role_name=role name
-            acc_value=acc value
-            class_name=class name
-            control_type=control type
-            full_description=full description
-
-        '''
-
-     Caculator.find_element_by_wait(self, timeout=5000, use_re=False, **query)
-     
-     timeout is not required,The default value is 5000
-     
-     use_re is not required,The default value is False, If the value is true, a regular expression match can be used
-     e.g  `Caculator.find_element_by_wait(acc_name=".*Start.*")`
-   
-     query is required,You can use multiple query
      Simulate opening the Windows interface to search and press enter to start the program
 
      win_keyboard.send(win_keyboard.codes.LEFT_WIN)
-      win_keyboard.copy_text(app_name)
-      time.sleep(1)
-      win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
-      time.sleep(1)
-      win_keyboard.send(win_keyboard.codes.RETURN)
- `
-      //Simulate opening the Windows interface to search and press enter to start the program
-      
-`
-
+     win_keyboard.copy_text(app_name)
+     time.sleep(1)
+     win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
+     time.sleep(1)
+     win_keyboard.send(win_keyboard.codes.RETURN)     
 
 
 背景
@@ -217,16 +191,22 @@ UIElementRef 对象支持输入和清除
       `
     
 ### 通用操作
-
- 支持鼠标事件、组合键盘事件
+ ***支持鼠标事件、组合键盘事件：***
+     Caculator.find_element_by_wait(self, timeout=5000, use_re=False, **query)
+     
+     timeout 是一个可选参数，默认值为5000，即5秒
+     
+     use_re 是一个可选参数，默认值为False，若传True则表示开启正则表达式匹配
+     例如 Caculator.find_element_by_wait(acc_name=".*Start.*")
+   
  
-  //模拟打开Windows界面进行搜索并按回车键启动程序
-  win_keyboard.send(win_keyboard.codes.LEFT_WIN)
-  win_keyboard.copy_text(app_name)
-  time.sleep(1)
-  win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
-  time.sleep(1)
-  win_keyboard.send(win_keyboard.codes.RETURN)
+     模拟打开Windows界面进行搜索并按回车键启动程序
+     win_keyboard.send(win_keyboard.codes.LEFT_WIN)
+     win_keyboard.copy_text(app_name)
+     time.sleep(1)
+     win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
+     time.sleep(1)
+     win_keyboard.send(win_keyboard.codes.RETURN)
 
 
 
