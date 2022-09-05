@@ -191,14 +191,7 @@ UIElementRef 对象支持输入和清除
       `
     
 ### 通用操作
- ***支持鼠标事件、组合键盘事件：***
-     Caculator.find_element_by_wait(self, timeout=5000, use_re=False, **query)
-     
-     timeout 是一个可选参数，默认值为5000，即5秒
-     
-     use_re 是一个可选参数，默认值为False，若传True则表示开启正则表达式匹配
-     例如 Caculator.find_element_by_wait(acc_name=".*Start.*")
-   
+ ***支持鼠标事件、组合键盘事件：***   
  
      模拟打开Windows界面进行搜索并按回车键启动程序
      win_keyboard.send(win_keyboard.codes.LEFT_WIN)
