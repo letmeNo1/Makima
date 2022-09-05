@@ -92,17 +92,16 @@ e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("18
 
     
 ### Operation
-
-      *** Support Mouse events, Combination keyboard events *** 
+   ***Support Mouse events, Combination keyboard events ：***
  `
-          //Simulate opening the Windows interface to search and press enter to start the program
-          win_keyboard.send(win_keyboard.codes.LEFT_WIN)
-          win_keyboard.copy_text(app_name)
-          time.sleep(1)
-          win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
-          time.sleep(1)
-          win_keyboard.send(win_keyboard.codes.RETURN)
-   `
+      //Simulate opening the Windows interface to search and press enter to start the program
+      win_keyboard.send(win_keyboard.codes.LEFT_WIN)
+      win_keyboard.copy_text(app_name)
+      time.sleep(1)
+      win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
+      time.sleep(1)
+      win_keyboard.send(win_keyboard.codes.RETURN)
+`
 
 
 
