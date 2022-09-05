@@ -85,16 +85,16 @@ e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("18
      timeout is not required,The default value is 5000
      
      use_re is not required,The default value is False, If the value is true, a regular expression match can be used
-     e.g  Caculator.find_element_by_wait(acc_name=".*Start.*")
+     e.g  `Caculator.find_element_by_wait(acc_name=".*Start.*")`
    
      query is required,You can use multiple query
-     e.g Caculator.find_element_by_wait(acc_name="auto", class_name="UIItemsView")
+     e.g `Caculator.find_element_by_wait(acc_name="auto", class_name="UIItemsView")`
 
     
 ### Operation
 
  Support Mouse events, Combination keyboard events
- 
+ `
       //Simulate opening the Windows interface to search and press enter to start the program
       win_keyboard.send(win_keyboard.codes.LEFT_WIN)
       win_keyboard.copy_text(app_name)
@@ -102,6 +102,7 @@ e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("18
       win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
       time.sleep(1)
       win_keyboard.send(win_keyboard.codes.RETURN)
+   `
 
 
 
