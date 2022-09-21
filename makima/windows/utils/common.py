@@ -93,6 +93,7 @@ def get_window_class_name(hwnd):
 def find_windows(name, class_name=None):
     """
     Windows Platform find windows
+    :param class_name:
     :param name is windows name and class_name is unique one
     return hwnd list
     """

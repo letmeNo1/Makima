@@ -6,7 +6,6 @@ import pyscreeze
 def kmeans_run(path, distance=0.4):
     img = pyscreeze.screenshot()
     img1 = np.array(img)
-    print(img1)
     img2 = cv2.imread(path,
                       0)
     # 初始化SIFT选择器
