@@ -1,0 +1,4 @@
+comtypes==1.1.13
+numpy>=1.21.0
+opencv-python==4.6.0.66
+PyScreeze==0.1.28

@@ -33,5 +33,5 @@ driver.find_element(By.ID, "settings").click()
 time.sleep(2)
 driver.find_element(By.ID, "feedback").click()
 
-driver.quit()
+# driver.quit()
 

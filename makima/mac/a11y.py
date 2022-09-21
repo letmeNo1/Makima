@@ -1,14 +1,11 @@
 import re
-import signal
 
 import Cocoa
 import CoreFoundation
-import HIServices
 from ApplicationServices import *
-from Cocoa import *
 import ApplicationServices as AppServ
-from PyObjCTools import AppHelper, MachSignals
-
+from PyObjCTools import AppHelper
+import AppKit
 
 """
 Library of Apple A11y functions
@@ -291,7 +288,7 @@ def getfrontmostpid():
     Return the PID of the application in the foreground.
     :return: int
     """
-    frontmost_app = NSWorkspace.sharedWorkspace().frontmostApplication()
+    frontmost_app = AppKit.NSWorkspace.sharedWorkspace().frontmostApplication()
     pid = frontmost_app.processIdentifier()
     return pid
 

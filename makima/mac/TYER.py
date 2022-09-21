@@ -78,9 +78,9 @@ from makima.mac.a11y import AXUIElement
 #         #
 #         # w
 
-app_windows = AppServ.AXUIElementCreateApplication(10625) # AXUIElementRef
+app_windows = AppServ.AXUIElementCreateApplication(11741)  # AXUIElementRef
 # windowList = AppServ.AXUIElementCopyAttributeValue(app_windows, AppServ.kAXPositionAttribute, None)
-  # AXUIElement
+# AXUIElement
 aa = AXUIElement(app_windows)
 print(aa.get_pid())
-print(aa.get_attribute(AppServ.kAXTitleAttribute))
+print(aa.get_attribute(AppServ.kAXChildrenAttribute))
