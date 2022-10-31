@@ -31,7 +31,6 @@ class IKeyboard(object):
 
     __metaclass__ = ABCMeta
 
-    @abstractproperty
     def codes(self):
         """
         Container class to store KeyCodes as Keys class.

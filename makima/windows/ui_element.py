@@ -6,6 +6,8 @@ import comtypes.client
 
 from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query
 from makima.windows.utils.mouse import WinMouse
+from makima.windows.utils.keyboard import WinKeyboard
+
 import comtypes.client
 
 
@@ -77,6 +79,7 @@ class WinUIElement(object):
         self.IUIAutomationElement = IUIAutomationElement
 
     _mouse = WinMouse()
+    _keyboard = WinKeyboard()
 
     @property
     def get_toggle_state(self):
@@ -342,5 +345,16 @@ class WinUIElement(object):
         else:
             x, y = self.get_clickable_point()
         self._mouse.drag(x, y, x2, y2, smooth)
+
+    def input_text(self, text):
+        self.click()
+        self._keyboard.copy_text(text)
+        self._keyboard.send(self._keyboard.codes.CONTROL.modify(self._keyboard.codes.KEY_V),delay=1)
+
+    def clear(self):
+        self.click()
+        self._keyboard.send(self._keyboard.codes.CONTROL.modify(self._keyboard.codes.KEY_A),delay=1)
+        self._keyboard.send(self._keyboard.codes.DELETE)
+
 
 

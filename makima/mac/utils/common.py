@@ -7,8 +7,8 @@ from makima.mac.utils.keyboard import combination_key_operation
 from makima.mac.utils.mouse import left_mouse_single_click_event
 
 
-def type(x, y, input_text):
-    set_paste_board(input_text)
+def input_text(x, y, text):
+    set_paste_board(text)
     left_mouse_single_click_event(x, y)
     combination_key_operation(KeyCodes.kVK_ANSI_V, Quartz.kCGEventFlagMaskCommand)
 

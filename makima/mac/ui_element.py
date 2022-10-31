@@ -7,6 +7,7 @@ from PyObjCTools import AppHelper
 import HIServices
 
 from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query
+from makima.mac.utils.common import input_text, clear
 from makima.mac.utils.mouse import *
 
 """
@@ -327,6 +328,14 @@ class MacUIElement(object):
     def drag(self, to_x, to_y, duration):
         x, y = self.get_center_coordinates
         left_mouse_dragged_event(x, y, to_x, to_y, duration)
+
+    def input_text(self, text):
+        x, y = self.get_center_coordinates
+        input_text(x, y, text)
+
+    def clear(self):
+        x, y = self.get_center_coordinates
+        clear(x, y)
 
     '''
        query:
