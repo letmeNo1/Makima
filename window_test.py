@@ -8,13 +8,15 @@ import unittest
 
 class MyTest(unittest.TestCase):
     def setUp(self):
+        os.system(r"C:\Windows\System32\calc.exe")
+        time.sleep(2)
         self.calculator = initialize_app_ref_for_win("Calculator")
         # Make the window appear at frontends
         hwnd = find_windows("Calculator")[0]
         set_focus_window(hwnd)
 
     def tearDown(self):
-        pass
+        os.system('taskkill /f /t /im ' + "calculator.exe")
 
     def test_calculator(self):
         # Do a 32 by 32 and get the result
@@ -25,7 +27,7 @@ class MyTest(unittest.TestCase):
         self.calculator.find_element_by_wait(automation_id="num2Button").click()
         self.calculator.find_element_by_wait(automation_id="equalButton").click()
         time.sleep(2)
-        assert self.calculator.find_elements_by_wait(role="AXStaticText")[1].get_value == "1024"
+        assert self.calculator.find_element_by_wait(automation_id="CalculatorResults").get_acc_name == "Display is 1,024"
 
 
 if __name__ == "__main__":

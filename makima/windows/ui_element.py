@@ -4,7 +4,7 @@ from xml.dom import minidom
 
 import comtypes.client
 
-from makima.windows.utils.find_ui_element import wait_function, find_element_by_query, find_elements_by_query
+from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query
 from makima.windows.utils.mouse import WinMouse
 import comtypes.client
 

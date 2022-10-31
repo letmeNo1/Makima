@@ -1,10 +1,10 @@
 import re
 
 from makima.openCV.kmeans_run import kmeans_run
-from .stack import Stack
+from makima.mac.utils.stack import Stack
 import time
 
-from ..image_object import ImageObject
+from makima.mac.image_object import ImageObject
 
 
 def wait_function(timeout, use_re, func, *args, **query):
@@ -38,7 +38,6 @@ def find_element_by_query(use_re, *args, **query):
 
     while all_node.is_not_empty():
         element = all_node.pop()
-        print(element.get_value)
         elements_list = element.get_acc_children_elements()
 
         if use_re:
