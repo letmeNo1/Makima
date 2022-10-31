@@ -1,5 +1,0 @@
-numpy==1.23.2
-opencv-python==4.6.0.66
-psutil==5.9.3
-pyobjc==8.5.1
-PyScreeze==0.1.28
