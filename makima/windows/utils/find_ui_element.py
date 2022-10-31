@@ -57,6 +57,7 @@ def find_element_by_query(use_re, *args, **query):
                 result = last_element
             else:
                 result = element
+            break
 
         last_element = element
         if len(elements_list) > 0:

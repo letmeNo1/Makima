@@ -1,8 +1,6 @@
 import numpy as np
 import cv2
-import pyautogui
-from matplotlib import pyplot as plt
-from sklearn.neighbors import LocalOutlierFactor
+
 
 
 # img = pyautogui.screenshot()
@@ -94,11 +92,6 @@ output_image = cv2.drawKeypoints(img2, kp1, 0, (0, 0, 255),
 
 # displaying the image with keypoints as the
 # output on the screen
-
-plt.imshow(output_image)
-
-# plotting image
-plt.show()
 
 img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
 cv2.imshow("sss", img3)

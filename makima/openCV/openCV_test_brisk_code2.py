@@ -1,18 +1,8 @@
-import numpy as np
 import cv2
-import pyautogui
-from matplotlib import pyplot as plt
-from sklearn.neighbors import LocalOutlierFactor
-
-# img = pyautogui.screenshot()
-# print(img)
-# img1 = np.array(img)
 img1 = cv2.imread('C:\\Users\\hanhuang\\003.png', 0)  # trainImage
 img2 = cv2.imread('C:\\Users\\hanhuang\\004.png', 0)  # trainImage
 
-# image = img1[100:900, 50:1850]
-# plt.imshow(image)
-# plt.show()
+
 # Initiate SIFT detector
 BRISK = cv2.BRISK_create()
 
@@ -54,9 +44,6 @@ output_image = cv2.drawKeypoints(img2, kp1, 0, (0, 0, 255),
 # displaying the image with keypoints as the
 # output on the screen
 
-plt.imshow(output_image)
-plt.show()
-
 # Draw first 15 matches
 output = cv2.drawMatches(img1=img1,
                          keypoints1=kp1,
@@ -66,8 +53,6 @@ output = cv2.drawMatches(img1=img1,
                          outImg=None,
                          flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
-plt.imshow(output)
-plt.show()
 
 #
 # window_name = 'Image'
