@@ -40,16 +40,16 @@ Using `inspect.exe` can provide a quick way to find these attributes.
 Usage
 ==========
 
-### launch app and initialize an UIElementRef by identifier(Mac) or window name(Windows)
+### launch app and initialize an UIElementRef by app name
  
- ***For Mac：*** pass
+ ***For Mac：*** Caculator = initialize_app_ref_for_mac("Caculator")
 
 
  ***For Windows：***  Caculator = initialize_app_ref_for_win("Caculator")
 
  ***Mouse event：***
 
-UIElementRef object support click, double click, long click, hover，drag
+UIElementRef object support click, double click, long click, drag
 
 e.g.  `Caculator.find_element_by_wait(acc_name = "Input phone number",0).click()` or `Caculator.find_element_by_wait(acc_name = "Input phone number",0).doubleClick()`
 
