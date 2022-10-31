@@ -57,13 +57,34 @@ e.g.  `Caculator.find_element_by_wait(acc_name = "Input phone number",0).click()
 
 UIElementRef object support type and clear
 
-e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("188888")` or `Caculator.find_element_by_wait(acc_name = "Input phone number",0).clear()`
+e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).input_text("188888")` or `Caculator.find_element_by_wait(acc_name = "Input phone number",0).clear()`
 
 
 ### find elements
    
  ***For Mac：*** 
-  pass
+ 
+     '''
+       support query:
+           identifier = identifier
+           help = help
+           title = title
+           role_description = role description
+           role = role name
+           sub_role = Subrole
+           value = value
+
+      '''
+
+     Caculator.find_element_by_wait(self, timeout=5000, use_re=False, **query)
+     
+     timeout is not required,The default value is 5000
+     
+     use_re is not required,The default value is False, If the value is true, a regular expression match can be used
+     e.g  `Caculator.find_element_by_wait(help=".*Start.*")`
+   
+     query is required,You can use multiple query
+     e.g `Caculator.find_element_by_wait(help="auto", role="AXRadioButton")`
      
  ***For Windows：***
  
@@ -94,6 +115,8 @@ e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("18
 ### Operation
    ***Support Mouse events, Combination keyboard events ：***
    
+   ***For Windows：***
+   
      Simulate opening the Windows interface to search and press enter to start the program
 
      win_keyboard.send(win_keyboard.codes.LEFT_WIN)
@@ -101,22 +124,24 @@ e.g. `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("18
      time.sleep(1)
      win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
      time.sleep(1)
-     win_keyboard.send(win_keyboard.codes.RETURN)     
+     win_keyboard.send(win_keyboard.codes.RETURN)
+     
+   ***For Mac：***
+   
+     Simulate ctrl c + ctrl v
+     
+     combination_key_operation(KeyCodes.kVK_ANSI_V, Quartz.kCGEventFlagMaskCommand)
+
 
 
 背景
 ==========
 
-Makima是一个基于Accessibility Api实现的跨平台(Mac(pending)/Windows）桌面端自动化测试框架，借助开源框架Ctype实现了对系统底层Api的访问。
+Makima是一个基于Accessibility Api实现的跨平台(Mac/Windows）桌面端自动化测试框架，借助开源框架Ctype(Win)/pyobjc(Mac)实现了对系统底层Api的访问。
 
 安装
 ===============
-pip install makima
-
-
-**对于 Mac**
-
-pass
+pip install makima==0.1.9
 
 元素定位工具
 ===============
@@ -138,7 +163,7 @@ Accessibility Inspector：Xcode -> 打开 Developer Tools
 
 ### 启动应用程序并通过窗口名称获取到UI对象
  
- ***对于 Mac：*** pass
+ ***对于 Mac：*** Caculator = initialize_app_ref_for_mac("Caculator")
 
 
  ***对于 Windows：***  Caculator = initialize_app_ref_for_win("Caculator")
@@ -147,7 +172,7 @@ App 窗口本身就是一个 UIElementRef 对象，而每个元素也都是一�
 
  ***鼠标事件：***
 
-UIElementRef 对象支持单击、双击、长按、悬停
+UIElementRef 对象支持单击、双击、长按
 
 例如: `Caculator.find_element_by_wait(acc_name = "Input phone number",0).click()` or `Caculator.find_element_by_wait(acc_name = "Input phone number",0).doubleClick()`
 
@@ -155,13 +180,37 @@ UIElementRef 对象支持单击、双击、长按、悬停
 
 UIElementRef 对象支持输入和清除
 
-例如:  `Caculator.find_element_by_wait(acc_name = "Input phone number",0).type("188888")` 或 `Caculator.find_element_by_wait(acc_name = "Input phone number",0).clear()`
+(目前输入是将文本写入剪贴板，然后执行Ctrl C + Ctrl V，清除是 Ctrl + A 全选后，按Delete... 没办法中文输入太难搞了，为了实现支持中文输入只能先这样搞，有更好的idea欢迎提出来)
+
+例如:  `Caculator.find_element_by_wait(acc_name = "Input phone number",0).input_text("188888")` 或 `Caculator.find_element_by_wait(acc_name = "Input phone number",0).clear()`
 
 ### 查找元素
 
  ***对于 Mac：*** 
   
-    pass
+     '''
+       支持的查找方式:
+           identifier = identifier
+           help = help
+           title = title
+           role_description = role description
+           role = role name
+           sub_role = Subrole
+           value = value
+
+      '''
+
+     Caculator.find_element_by_wait(self, timeout=5000, use_re=False, **query)
+     
+     timeout 是一个可选参数，默认值为5000，即5秒
+
+     use_re 是一个可选参数，默认值为False，若传True则表示开启正则表达式匹配
+
+     e.g  `Caculator.find_element_by_wait(help=".*Start.*")`
+   
+     query 是一个必备参数，可以同时使用多个query来进行查找
+     
+     e.g `Caculator.find_element_by_wait(help="auto", role="AXRadioButton")`
      
  ***对于 Windows：***
      
@@ -184,15 +233,17 @@ UIElementRef 对象支持输入和清除
      use_re 是一个可选参数，默认值为False，若传True则表示开启正则表达式匹配
      例如 Caculator.find_element_by_wait(acc_name=".*Start.*")
    
-     query 是一个必备参数，可以同事使用多个query来进行查找
+     query 是一个必备参数，可以同时使用多个query来进行查找
      
      例如 Caculator.find_element_by_wait(acc_name="auto", class_name="UIItemsView")
 
       `
     
 ### 通用操作
- ***支持鼠标事件、组合键盘事件：***   
+ ***支持鼠标事件、组合键盘事件：***  
  
+      ***对于 Windows：***
+
      模拟打开Windows界面进行搜索并按回车键启动程序
      win_keyboard.send(win_keyboard.codes.LEFT_WIN)
      win_keyboard.copy_text(app_name)
@@ -200,6 +251,14 @@ UIElementRef 对象支持输入和清除
      win_keyboard.send(win_keyboard.codes.CONTROL.modify(win_keyboard.codes.KEY_V), delay=1)
      time.sleep(1)
      win_keyboard.send(win_keyboard.codes.RETURN)
+     
+     ***对于 Mac：***
+   
+     模拟 ctrl c + ctrl v
+     
+     combination_key_operation(KeyCodes.kVK_ANSI_V, Quartz.kCGEventFlagMaskCommand)
+     
+     可以传入至多三个按键
 
 
 
