@@ -16,7 +16,7 @@ class MyTest(unittest.TestCase):
         assert is_finished_launching("Calculator") is True
 
     def tearDown(self):
-        pass
+        os.system("""osascript -e 'tell app "Calculator" to quit'""")
 
     def test_calculator(self):
         self.calculator.find_elements_by_wait(title="3")[1].click()
