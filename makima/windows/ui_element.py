@@ -4,7 +4,8 @@ from xml.dom import minidom
 
 import comtypes.client
 
-from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query
+from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
+    wait_function_by_image, find_element_by_image
 from makima.windows.utils.mouse import WinMouse
 from makima.windows.utils.keyboard import WinKeyboard
 
@@ -301,6 +302,8 @@ class WinUIElement(object):
         class_name=class name
         control_type_name=control type name
     '''
+    def find_element_by_image_by_wait(self, path, timeout=5000, distance=0.4, algorithms_name="SIFT"):
+        return wait_function_by_image(timeout,  find_element_by_image, path, distance, algorithms_name)
 
     def find_element_by_wait(self, timeout=5000, use_re=False, **query):
         return wait_function(timeout, use_re, find_element_by_query, self, **query)

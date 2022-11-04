@@ -28,7 +28,8 @@ class MyTest(unittest.TestCase):
         self.calculator.find_element_by_wait(automation_id="equalButton").click()
         time.sleep(2)
         assert self.calculator.find_element_by_wait(automation_id="CalculatorResults").get_acc_name == "Display is 1,024"
-
+        self.calculator.find_element_by_wait(automation_id="CalculatorResults").input_text("123")
+        assert self.calculator.find_element_by_wait(automation_id="CalculatorResults").get_acc_name == "Display is 123"
 
 if __name__ == "__main__":
     unittest.main()

@@ -21,10 +21,20 @@ def wait_function(timeout, use_re, func, *args, **query):
     raise TimeoutError(error)
 
 
-def find_element_by_image(path, distance, **method):
-    query_method = list(method.items().mapping.keys())[0]
-    query_string = list(method.items().mapping.values())[0]
-    x, y = kmeans_run(path, distance)
+def wait_function_by_image(timeout, func, path, distance, algorithms_name):
+    time_started_sec = time.time()
+    while time.time() < time_started_sec + timeout / 1000.0:
+        result = func(path, distance, algorithms_name)
+        if result is not None:
+            finish_time = time.time() - time_started_sec
+            # print("Found element in {} s".format(finish_time))
+            return result
+    error = "Can't find element/elements in %s s by image" % (timeout / 1000.0)
+    raise TimeoutError(error)
+
+
+def find_element_by_image(path, distance, algorithms_name):
+    x, y = kmeans_run(path, distance, algorithms_name)
     if x is not None:
         return ImageObject(x, y)
     else:

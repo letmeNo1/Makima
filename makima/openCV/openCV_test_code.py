@@ -6,15 +6,18 @@ import cv2
 # img = pyautogui.screenshot()
 # print(img)
 # img1 = np.array(img)
-img1 = cv2.imread('C:\\Users\\hanhuang\\003.png', 0)  # trainImage
-img2 = cv2.imread('C:\\Users\\hanhuang\\004.png', 0)
+import pyscreeze
+
+img1 = cv2.imread('C:\\Users\\hanhuang\\001.png', 0)  # trainImage
+img2 = pyscreeze.screenshot()
+img2 = np.array(img2)
 
 
 # image = img1[100:900, 50:1850]
 # plt.imshow(image)
 # plt.show()
 # Initiate SIFT detector
-sift = cv2.ORB_create()
+sift = cv2.BRISK_create()
 
 # find the keypoints and descriptors with SIFT
 kp1, des1 = sift.detectAndCompute(img1, None)
@@ -94,8 +97,8 @@ output_image = cv2.drawKeypoints(img2, kp1, 0, (0, 0, 255),
 # output on the screen
 
 img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
-cv2.imshow("sss", img3)
-cv2.waitKey(100000)
+# cv2.imshow("sss", img3)
+# cv2.waitKey(1) & 0xFF
 
 
 #
@@ -122,4 +125,4 @@ cv2.rectangle(img2, (x_of_point1_of_transform_image, y_of_point1_of_transform_im
               (x_of_point3_of_transform_image, y_of_point3_of_transform_image), (255, 0, 0), 2)  # 画大矩形
 image = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # 色彩空间转换
 cv2.imshow("绘制矩形", image)
-cv2.waitKey(100000)
+cv2.waitKey(10000) & 0xFF

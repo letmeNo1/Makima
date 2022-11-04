@@ -1,6 +1,10 @@
 import cv2
-img1 = cv2.imread('C:\\Users\\hanhuang\\003.png', 0)  # trainImage
-img2 = cv2.imread('C:\\Users\\hanhuang\\004.png', 0)  # trainImage
+import numpy as np
+import pyscreeze
+
+img2 = cv2.imread('C:\\Users\\hanhuang\\001.png', 0)  # trainImage
+img1 = pyscreeze.screenshot()
+img1 = np.array(img1)
 
 
 # Initiate SIFT detector

@@ -151,7 +151,7 @@ class WinMouse(IMouse):
         common.verify_mouse_button_name(button_name,
                                         self._SUPPORTED_BUTTON_NAMES)
 
-        self.move(x, y)
+        self.move(x, y, False)
         self._do_event(
             self._compose_mouse_event(button_name, press=True, release=True),
             0, 0, 0, 0)
