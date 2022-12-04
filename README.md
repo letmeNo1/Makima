@@ -1,4 +1,4 @@
-Aki - Automated Testing on desktop
+Makima - Automated Testing on desktop
 =================================
 -   [English](#Background)
 -   [中文版](#背景)
