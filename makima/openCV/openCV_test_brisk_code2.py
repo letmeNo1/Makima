@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import pyscreeze
 
-img2 = cv2.imread('C:\\Users\\hanhuang\\001.png', 0)  # trainImage
+img2 = cv2.imread('C:\\Users\\hanhuang\\test.png', 0)  # trainImage
 img1 = pyscreeze.screenshot()
 img1 = np.array(img1)
 
@@ -81,5 +81,5 @@ output = cv2.drawMatches(img1=img1,
 # cv2.rectangle(img2, (x_of_point1_of_transform_image, y_of_point1_of_transform_image),
 #               (x_of_point3_of_transform_image, y_of_point3_of_transform_image), (255, 0, 0), 2)  # 画大矩形
 # image = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # 色彩空间转换
-# cv2.imshow("绘制矩形", image)
-# cv2.waitKey(100000)
+cv2.imshow("绘制矩形", output)
+cv2.waitKey(100000)

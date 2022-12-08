@@ -294,6 +294,11 @@ class WinUIElement(object):
     def get_acc_children_elements(self):
         return self.findall("children")
 
+    @property
+    def get_CachedNativeWindowHandle(self):
+        hwnd = self.IUIAutomationElement.CurrentNativeWindowHandle
+        return hwnd
+
     '''
     query:
         automation_id=automation id
