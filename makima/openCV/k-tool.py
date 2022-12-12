@@ -161,14 +161,14 @@ bt2_open = tkinter.Button(root, command=openfile2, text='open part pic', height=
 
 bt_recognition = tkinter.Button(root, command=recognition, text='recognize', height=2, width=10, activebackground='red',font=9)
 
-bt_open.place(x=0, y=0)
-bt2_open.place(x=120, y=0)
-bt_recognition.place(x=250, y=0)
+bt_open.grid(row=0, column=0)
+bt2_open.grid(row=0, column=1)
+bt_recognition.grid(row=0, column=3)
 
-label.place(x=0, y=55)
-opt.place(x=100, y=50)
-label2.place(x=0, y=95)
-opt2.place(x=100, y=90)
+label.grid(row=1, column=0)
+opt.grid(row=1, column=1)
+label2.grid(row=2, column=0)
+opt2.grid(row=2, column=1)
 
 root.geometry("350x150+700+300")
 root.mainloop()

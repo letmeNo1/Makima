@@ -64,6 +64,187 @@ _control_type = {
     UIAutomationClient.UIA_TreeItemControlTypeId: 'UIA_TreeItemControlTypeId',
     UIAutomationClient.UIA_WindowControlTypeId: 'UIA_WindowControlTypeId'
 }
+class PropertyId:
+    """
+    PropertyId from IUIAutomation.
+    Refer https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-automation-element-propids
+    Refer https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-control-pattern-propids
+    """
+    AcceleratorKeyProperty = 30006
+    AccessKeyProperty = 30007
+    AnnotationAnnotationTypeIdProperty = 30113
+    AnnotationAnnotationTypeNameProperty = 30114
+    AnnotationAuthorProperty = 30115
+    AnnotationDateTimeProperty = 30116
+    AnnotationObjectsProperty = 30156
+    AnnotationTargetProperty = 30117
+    AnnotationTypesProperty = 30155
+    AriaPropertiesProperty = 30102
+    AriaRoleProperty = 30101
+    AutomationIdProperty = 30011
+    BoundingRectangleProperty = 30001
+    CenterPointProperty = 30165
+    ClassNameProperty = 30012
+    ClickablePointProperty = 30014
+    ControlTypeProperty = 30003
+    ControllerForProperty = 30104
+    CultureProperty = 30015
+    DescribedByProperty = 30105
+    DockDockPositionProperty = 30069
+    DragDropEffectProperty = 30139
+    DragDropEffectsProperty = 30140
+    DragGrabbedItemsProperty = 30144
+    DragIsGrabbedProperty = 30138
+    DropTargetDropTargetEffectProperty = 30142
+    DropTargetDropTargetEffectsProperty = 30143
+    ExpandCollapseExpandCollapseStateProperty = 30070
+    FillColorProperty = 30160
+    FillTypeProperty = 30162
+    FlowsFromProperty = 30148
+    FlowsToProperty = 30106
+    FrameworkIdProperty = 30024
+    FullDescriptionProperty = 30159
+    GridColumnCountProperty = 30063
+    GridItemColumnProperty = 30065
+    GridItemColumnSpanProperty = 30067
+    GridItemContainingGridProperty = 30068
+    GridItemRowProperty = 30064
+    GridItemRowSpanProperty = 30066
+    GridRowCountProperty = 30062
+    HasKeyboardFocusProperty = 30008
+    HelpTextProperty = 30013
+    IsAnnotationPatternAvailableProperty = 30118
+    IsContentElementProperty = 30017
+    IsControlElementProperty = 30016
+    IsCustomNavigationPatternAvailableProperty = 30151
+    IsDataValidForFormProperty = 30103
+    IsDockPatternAvailableProperty = 30027
+    IsDragPatternAvailableProperty = 30137
+    IsDropTargetPatternAvailableProperty = 30141
+    IsEnabledProperty = 30010
+    IsExpandCollapsePatternAvailableProperty = 30028
+    IsGridItemPatternAvailableProperty = 30029
+    IsGridPatternAvailableProperty = 30030
+    IsInvokePatternAvailableProperty = 30031
+    IsItemContainerPatternAvailableProperty = 30108
+    IsKeyboardFocusableProperty = 30009
+    IsLegacyIAccessiblePatternAvailableProperty = 30090
+    IsMultipleViewPatternAvailableProperty = 30032
+    IsObjectModelPatternAvailableProperty = 30112
+    IsOffscreenProperty = 30022
+    IsPasswordProperty = 30019
+    IsPeripheralProperty = 30150
+    IsRangeValuePatternAvailableProperty = 30033
+    IsRequiredForFormProperty = 30025
+    IsScrollItemPatternAvailableProperty = 30035
+    IsScrollPatternAvailableProperty = 30034
+    IsSelectionItemPatternAvailableProperty = 30036
+    IsSelectionPattern2AvailableProperty = 30168
+    IsSelectionPatternAvailableProperty = 30037
+    IsSpreadsheetItemPatternAvailableProperty = 30132
+    IsSpreadsheetPatternAvailableProperty = 30128
+    IsStylesPatternAvailableProperty = 30127
+    IsSynchronizedInputPatternAvailableProperty = 30110
+    IsTableItemPatternAvailableProperty = 30039
+    IsTablePatternAvailableProperty = 30038
+    IsTextChildPatternAvailableProperty = 30136
+    IsTextEditPatternAvailableProperty = 30149
+    IsTextPattern2AvailableProperty = 30119
+    IsTextPatternAvailableProperty = 30040
+    IsTogglePatternAvailableProperty = 30041
+    IsTransformPattern2AvailableProperty = 30134
+    IsTransformPatternAvailableProperty = 30042
+    IsValuePatternAvailableProperty = 30043
+    IsVirtualizedItemPatternAvailableProperty = 30109
+    IsWindowPatternAvailableProperty = 30044
+    ItemStatusProperty = 30026
+    ItemTypeProperty = 30021
+    LabeledByProperty = 30018
+    LandmarkTypeProperty = 30157
+    LegacyIAccessibleChildIdProperty = 30091
+    LegacyIAccessibleDefaultActionProperty = 30100
+    LegacyIAccessibleDescriptionProperty = 30094
+    LegacyIAccessibleHelpProperty = 30097
+    LegacyIAccessibleKeyboardShortcutProperty = 30098
+    LegacyIAccessibleNameProperty = 30092
+    LegacyIAccessibleRoleProperty = 30095
+    LegacyIAccessibleSelectionProperty = 30099
+    LegacyIAccessibleStateProperty = 30096
+    LegacyIAccessibleValueProperty = 30093
+    LevelProperty = 30154
+    LiveSettingProperty = 30135
+    LocalizedControlTypeProperty = 30004
+    LocalizedLandmarkTypeProperty = 30158
+    MultipleViewCurrentViewProperty = 30071
+    MultipleViewSupportedViewsProperty = 30072
+    NameProperty = 30005
+    NativeWindowHandleProperty = 30020
+    OptimizeForVisualContentProperty = 30111
+    OrientationProperty = 30023
+    OutlineColorProperty = 30161
+    OutlineThicknessProperty = 30164
+    PositionInSetProperty = 30152
+    ProcessIdProperty = 30002
+    ProviderDescriptionProperty = 30107
+    RangeValueIsReadOnlyProperty = 30048
+    RangeValueLargeChangeProperty = 30051
+    RangeValueMaximumProperty = 30050
+    RangeValueMinimumProperty = 30049
+    RangeValueSmallChangeProperty = 30052
+    RangeValueValueProperty = 30047
+    RotationProperty = 30166
+    RuntimeIdProperty = 30000
+    ScrollHorizontalScrollPercentProperty = 30053
+    ScrollHorizontalViewSizeProperty = 30054
+    ScrollHorizontallyScrollableProperty = 30057
+    ScrollVerticalScrollPercentProperty = 30055
+    ScrollVerticalViewSizeProperty = 30056
+    ScrollVerticallyScrollableProperty = 30058
+    Selection2CurrentSelectedItemProperty = 30171
+    Selection2FirstSelectedItemProperty = 30169
+    Selection2ItemCountProperty = 30172
+    Selection2LastSelectedItemProperty = 30170
+    SelectionCanSelectMultipleProperty = 30060
+    SelectionIsSelectionRequiredProperty = 30061
+    SelectionItemIsSelectedProperty = 30079
+    SelectionItemSelectionContainerProperty = 30080
+    SelectionSelectionProperty = 30059
+    SizeOfSetProperty = 30153
+    SizeProperty = 30167
+    SpreadsheetItemAnnotationObjectsProperty = 30130
+    SpreadsheetItemAnnotationTypesProperty = 30131
+    SpreadsheetItemFormulaProperty = 30129
+    StylesExtendedPropertiesProperty = 30126
+    StylesFillColorProperty = 30122
+    StylesFillPatternColorProperty = 30125
+    StylesFillPatternStyleProperty = 30123
+    StylesShapeProperty = 30124
+    StylesStyleIdProperty = 30120
+    StylesStyleNameProperty = 30121
+    TableColumnHeadersProperty = 30082
+    TableItemColumnHeaderItemsProperty = 30085
+    TableItemRowHeaderItemsProperty = 30084
+    TableRowHeadersProperty = 30081
+    TableRowOrColumnMajorProperty = 30083
+    ToggleToggleStateProperty = 30086
+    Transform2CanZoomProperty = 30133
+    Transform2ZoomLevelProperty = 30145
+    Transform2ZoomMaximumProperty = 30147
+    Transform2ZoomMinimumProperty = 30146
+    TransformCanMoveProperty = 30087
+    TransformCanResizeProperty = 30088
+    TransformCanRotateProperty = 30089
+    ValueIsReadOnlyProperty = 30046
+    ValueValueProperty = 30045
+    VisualEffectsProperty = 30163
+    WindowCanMaximizeProperty = 30073
+    WindowCanMinimizeProperty = 30074
+    WindowIsModalProperty = 30077
+    WindowIsTopmostProperty = 30078
+    WindowWindowInteractionStateProperty = 30076
+    WindowWindowVisualStateProperty = 30075
+
+
 
 _tree_scope = {
     'ancestors': UIAutomationClient.TreeScope_Ancestors,
@@ -197,7 +378,12 @@ class WinUIElement(object):
             return point[0].x, point[0].y
         else:
             return None
+    @property
+    def get_description(self):
+        return self.get_iaccessible_property(PropertyId.LegacyIAccessibleDescriptionProperty)
 
+    def get_iaccessible_property(self, propertyId):
+        return self.IUIAutomationElement.GetCurrentPropertyValue(int(propertyId))
     def _build_condition(self, Name, ControlType, AutomationId):
         condition = _IUIAutomation.CreateTrueCondition()
 
