@@ -122,7 +122,7 @@ class WinMouse(IMouse):
     def press_button(self, x, y, button_name=LEFT_BUTTON):
         common.verify_xy_coordinates(x, y)
         common.verify_mouse_button_name(button_name,
-                                        self._SUPPORTED_BUTTON_NAMES)
+                                 self._SUPPORTED_BUTTON_NAMES)
 
         self.move(x, y)
         self._do_event(
@@ -131,17 +131,17 @@ class WinMouse(IMouse):
 
     def release_button(self, button_name=LEFT_BUTTON):
         common.verify_mouse_button_name(button_name,
-                                        self._SUPPORTED_BUTTON_NAMES)
+                                 self._SUPPORTED_BUTTON_NAMES)
 
         self._do_event(
             self._compose_mouse_event(button_name, press=False, release=True),
             0, 0, 0, 0)
 
-    def click(self, x, y, button_name=LEFT_BUTTON):
+    def click(self, x, y, need_move=False, button_name=LEFT_BUTTON):
         common.verify_xy_coordinates(x, y)
         common.verify_mouse_button_name(button_name,
-                                        self._SUPPORTED_BUTTON_NAMES)
-        self.move(x, y, False)
+                                 self._SUPPORTED_BUTTON_NAMES)
+        self.move(x, y, need_move)
         self._do_event(
             self._compose_mouse_event(button_name, press=True, release=True),
             0, 0, 0, 0)
@@ -149,9 +149,9 @@ class WinMouse(IMouse):
     def double_click(self, x, y, button_name=LEFT_BUTTON):
         common.verify_xy_coordinates(x, y)
         common.verify_mouse_button_name(button_name,
-                                        self._SUPPORTED_BUTTON_NAMES)
+                                 self._SUPPORTED_BUTTON_NAMES)
 
-        self.move(x, y, False)
+        self.move(x, y)
         self._do_event(
             self._compose_mouse_event(button_name, press=True, release=True),
             0, 0, 0, 0)

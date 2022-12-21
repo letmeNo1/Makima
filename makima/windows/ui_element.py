@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import time
 from collections import deque
 from xml.dom import minidom
 
@@ -6,6 +7,7 @@ import comtypes.client
 
 from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
     wait_function_by_image, find_element_by_image
+from makima.windows.utils.common import show_windows, set_focus_window
 from makima.windows.utils.mouse import WinMouse
 from makima.windows.utils.keyboard import WinKeyboard
 
@@ -64,7 +66,7 @@ _control_type = {
     UIAutomationClient.UIA_TreeItemControlTypeId: 'UIA_TreeItemControlTypeId',
     UIAutomationClient.UIA_WindowControlTypeId: 'UIA_WindowControlTypeId'
 }
-class PropertyId:
+class Property_Id:
     """
     PropertyId from IUIAutomation.
     Refer https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-automation-element-propids
@@ -259,9 +261,22 @@ _tree_scope = {
 class WinUIElement(object):
     def __init__(self, IUIAutomationElement):
         self.IUIAutomationElement = IUIAutomationElement
+        self.current_hwnd = None
 
     _mouse = WinMouse()
     _keyboard = WinKeyboard()
+
+    def set_current_hwnd(self, hwnd):
+        self.current_hwnd = hwnd
+
+    @property
+    def get_current_hwnd(self):
+        return self.current_hwnd
+
+    @property
+    def get_CachedNativeWindowHandle(self):
+        hwnd = self.IUIAutomationElement.CurrentNativeWindowHandle
+        return hwnd
 
     @property
     def get_toggle_state(self):
@@ -378,12 +393,13 @@ class WinUIElement(object):
             return point[0].x, point[0].y
         else:
             return None
+
     @property
     def get_description(self):
-        return self.get_iaccessible_property(PropertyId.LegacyIAccessibleDescriptionProperty)
+        return self.get_iaccessible_property(Property_Id.LegacyIAccessibleDescriptionProperty)
 
     def get_iaccessible_property(self, propertyId):
-        return self.IUIAutomationElement.GetCurrentPropertyValue(int(propertyId))
+        return self.IUIAutomationElement.GetCurrentPropertyValue(propertyId)
     def _build_condition(self, Name, ControlType, AutomationId):
         condition = _IUIAutomation.CreateTrueCondition()
 
@@ -508,28 +524,61 @@ class WinUIElement(object):
     def find_elements_by_wait(self, timeout=5000, use_re=False, **query):
         return wait_function(timeout, use_re, find_elements_by_query, self, **query)
 
-    def click(self, x_offset=None, y_offset=None):
+    def click(self, need_move=False, x_offset=None, y_offset=None):
         if x_offset is not None:
             x = x_offset
             y = y_offset
         else:
-            x, y = self.get_clickable_point()
-        self._mouse.click(x, y)
+            rect = self.get_acc_location
+            x = rect[0] + (rect[2] - rect[0]) / 2
+            y = rect[1] + (rect[3] - rect[1]) / 2
 
-    def right_click(self, x_offset=None, y_offset=None):
+        self._mouse.click(x, y, need_move)
+
+    def hover(self, need_move=False, x_offset=None, y_offset=None):
         if x_offset is not None:
             x = x_offset
             y = y_offset
         else:
-            x, y = self.get_clickable_point()
-        self._mouse.click(x, y, self._mouse.RIGHT_BUTTON)
+            rect = self.get_acc_location
+
+            x = rect[0] + (rect[2] - rect[0]) / 2
+            y = rect[1] + (rect[3] - rect[1]) / 2
+            print(x, y)
+
+        self._mouse.move(x, y, need_move)
+
+    def input(self, content, x_offset=None, y_offset=None):
+        if x_offset is not None:
+            x = x_offset
+            y = y_offset
+        else:
+            rect = self.get_acc_location
+            x = rect[0] + (rect[2] - rect[0]) / 2
+            y = rect[1] + (rect[3] - rect[1]) / 2
+        self._mouse.click(x, y)
+        self._keyboard.copy_text(content)
+        time.sleep(1)
+        self._keyboard.send(self._keyboard.codes.CONTROL.modify(self._keyboard.codes.KEY_V), delay=1)
+
+    def right_click(self, need_move=False, x_offset=None, y_offset=None):
+        if x_offset is not None:
+            x = x_offset
+            y = y_offset
+        else:
+            rect = self.get_acc_location
+            x = rect[0] + (rect[2] - rect[0]) / 2
+            y = rect[1] + (rect[3] - rect[1]) / 2
+        self._mouse.click(x, y, need_move, self._mouse.RIGHT_BUTTON)
 
     def double_click(self, x_offset=None, y_offset=None):
         if x_offset is not None:
             x = x_offset
             y = y_offset
         else:
-            x, y = self.get_clickable_point()
+            rect = self.get_acc_location
+            x = rect[0] + (rect[2] - rect[0]) / 2
+            y = rect[1] + (rect[3] - rect[1]) / 2
         self._mouse.double_click(x, y)
 
     def drag_to(self, x2, y2, x_offset=None, y_offset=None, smooth=True):
@@ -537,7 +586,9 @@ class WinUIElement(object):
             x = x_offset
             y = y_offset
         else:
-            x, y = self.get_clickable_point()
+            rect = self.get_acc_location
+            x = rect[0] + (rect[2] - rect[0]) / 2
+            y = rect[1] + (rect[3] - rect[1]) / 2
         self._mouse.drag(x, y, x2, y2, smooth)
 
     def input_text(self, text):
