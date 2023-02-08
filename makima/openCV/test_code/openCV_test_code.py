@@ -8,9 +8,8 @@ import cv2
 # img1 = np.array(img)
 import pyscreeze
 
-img1 = cv2.imread('C:\\Users\\hanhuang\\001.png', 0)  # trainImage
-img2 = pyscreeze.screenshot()
-img2 = np.array(img2)
+img2 = cv2.imread('C:\\Users\\hanhuang\\sss2.png', 0)  # trainImage
+img1 = cv2.imread('C:\\Users\\hanhuang\\sss125.jpg', 0)  # trainImage
 
 
 # image = img1[100:900, 50:1850]

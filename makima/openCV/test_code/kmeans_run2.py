@@ -3,7 +3,7 @@ import numpy as np
 import pyscreeze
 
 
-def kmeans_run(path, distance=0.7, algorithms_name="SIFT"):
+def kmeans_run(path, path2,distance=0.7, algorithms_name="SIFT"):
     algorithms_all = {
         "SIFT": cv2.SIFT_create(),
         "BRISK": cv2.BRISK_create(),
@@ -11,8 +11,7 @@ def kmeans_run(path, distance=0.7, algorithms_name="SIFT"):
     }
     algorithms = algorithms_all[algorithms_name]
 
-    img = pyscreeze.screenshot()
-    img2 = np.array(img)
+    img2 = cv2.imread(path2, 0)
     img1 = cv2.imread(path, 0)
 
     # img2 = cv2.imread('C:\\Users\\hanhuang\\Untitled.png')
@@ -68,9 +67,11 @@ def kmeans_run(path, distance=0.7, algorithms_name="SIFT"):
 
         x = (x_of_point3_of_transform_image + x_of_point1_of_transform_image) / 2
         y = (y_of_point3_of_transform_image + y_of_point1_of_transform_image) / 2
-
+        output = cv2.rectangle(img2, (x_of_point1_of_transform_image, y_of_point1_of_transform_image), (x_of_point3_of_transform_image, y_of_point3_of_transform_image), (255, 0, 255), 3)
+        cv2.imshow("绘制矩形", output)
+        cv2.waitKey(100000)
         return x, y
     else:
         return None, None
 
-kmeans_run()
+print(kmeans_run('C:\\Users\\hanhuang\\sss2.png','C:\\Users\\hanhuang\\sss125.jpg',0.9))

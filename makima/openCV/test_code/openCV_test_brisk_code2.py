@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import pyscreeze
 
-img2 = cv2.imread('C:\\Users\\hanhuang\\test.png', 0)  # trainImage
-img1 = pyscreeze.screenshot()
+img2 = cv2.imread('C:\\Users\\hanhuang\\sss2.png', 0)  # trainImage
+img1 = cv2.imread('C:\\Users\\hanhuang\\sss125.jpg', 0)  # trainImage
 img1 = np.array(img1)
 
 
@@ -53,7 +53,7 @@ output = cv2.drawMatches(img1=img1,
                          keypoints1=kp1,
                          img2=img2,
                          keypoints2=kp2,
-                         matches1to2=matches[:15],
+                         matches1to2=matches[:20],
                          outImg=None,
                          flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
