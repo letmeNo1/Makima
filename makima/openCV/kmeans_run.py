@@ -72,5 +72,3 @@ def kmeans_run(path, distance=0.7, algorithms_name="SIFT"):
         return x, y
     else:
         return None, None
-
-kmeans_run()
