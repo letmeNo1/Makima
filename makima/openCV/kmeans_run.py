@@ -15,7 +15,6 @@ def kmeans_run(path, distance=0.7, algorithms_name="SIFT"):
     img2 = np.array(img)
     img1 = cv2.imread(path, 0)
 
-    # img2 = cv2.imread('C:\\Users\\hanhuang\\Untitled.png')
     # 检测关键点并计算描述符
     kp1, des1 = algorithms.detectAndCompute(img1, None)
     kp2, des2 = algorithms.detectAndCompute(img2, None)
