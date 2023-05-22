@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Makima.iml" filepath="$PROJECT_DIR$/.idea/Makima.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../openCVtest/.idea/openCVtest.iml" filepath="$PROJECT_DIR$/../openCVtest/.idea/openCVtest.iml" />
     </modules>
   </component>
 </project>
