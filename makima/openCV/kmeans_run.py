@@ -3,9 +3,9 @@ import numpy as np
 import pyscreeze
 
 
-def kmeans_run(path, distance=0.7, algorithms_name="SIFT"):
+def kmeans_run(path, algorithms_name="SIFT", arg=0.7):
     algorithms_all = {
-        "SIFT": cv2.SIFT_create(),
+        "SIFT": obr(),
         "BRISK": cv2.BRISK_create(),
         "ORB": cv2.ORB_create()
     }
