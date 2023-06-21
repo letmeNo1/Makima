@@ -6,9 +6,10 @@ import ApplicationServices as AppServ
 from PyObjCTools import AppHelper
 import HIServices
 
-from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query
-from makima.mac.utils.common import input_text, clear
-from makima.mac.utils.mouse import *
+from apollo.makima_for_jdo.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
+    wait_exist
+from apollo.makima_for_jdo.mac.utils.common import input_text, clear
+from apollo.makima_for_jdo.mac.utils.mouse import *
 
 """
 Library of Apple A11y functions
@@ -78,6 +79,8 @@ def set_error(error_code, error_message):
         HIServices.kAXErrorInvalidUIElement: ErrorInvalidUIElement,  # -25202
         HIServices.kAXErrorCannotComplete: ErrorCannotComplete,  # -25204
         HIServices.kAXErrorNotImplemented: ErrorNotImplemented,  # -25208
+        HIServices.kAXErrorFailure: ErrorCommon,  # -25200
+
     }
     msg = '{} (AX Error {})'.format(error_message, error_code)
 
@@ -105,6 +108,10 @@ class ErrorUnsupported(Error):
 
 
 class ErrorNotImplemented(Error):
+    pass
+
+
+class ErrorCommon(Error):
     pass
 
 
@@ -136,7 +143,6 @@ class MacUIElement(object):
         err, attr = HIServices.AXUIElementCopyAttributeNames(self.ref, None)
 
         if err != AppServ.kAXErrorSuccess:
-            print(err)
             set_error(err, 'Error retrieving attribute list')
         else:
             return list(attr)
@@ -247,7 +253,12 @@ class MacUIElement(object):
 
     @property
     def get_role(self):
-        return self.get_attribute(AppServ.kAXRoleAttribute)
+        try:
+            return self.get_attribute(AppServ.kAXRoleAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
 
     def get_acc_children_elements(self):
         rst = self.get_attribute(AppServ.kAXChildrenAttribute)
@@ -262,7 +273,13 @@ class MacUIElement(object):
 
     @property
     def get_identifier(self):
-        return self.get_attribute(AppServ.kAXIdentifierAttribute)
+        try:
+            return self.get_attribute(AppServ.kAXIdentifierAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
+
 
     @property
     def get_size(self):
@@ -274,12 +291,17 @@ class MacUIElement(object):
             return self.get_attribute(AppServ.kAXTitleAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorCommon:
+            return None
+
 
     @property
     def get_value(self):
         try:
             return self.get_attribute(AppServ.kAXValueAttribute)
         except ErrorUnsupported:
+            return None
+        except ErrorCommon:
             return None
 
     @property
@@ -288,10 +310,17 @@ class MacUIElement(object):
             return self.get_attribute(AppServ.kAXLabelValueAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorCommon:
+            return None
 
     @property
     def get_role_description(self):
-        return self.get_attribute(AppServ.kAXRoleDescriptionAttribute)
+        try:
+            return self.get_attribute(AppServ.kAXRoleDescriptionAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
 
     @property
     def get_parent(self):
@@ -299,11 +328,21 @@ class MacUIElement(object):
 
     @property
     def get_help(self):
-        return self.get_attribute(AppServ.kAXHelpAttribute)
+        try:
+            return self.get_attribute(AppServ.kAXHelpAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
 
     @property
     def get_sub_role(self):
-        return self.get_attribute(AppServ.kAXSubroleAttribute)
+        try:
+            return self.get_attribute(AppServ.kAXSubroleAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
 
     @property
     def get_center_coordinates(self):
@@ -359,6 +398,10 @@ class MacUIElement(object):
 
     def find_elements_by_wait(self, timeout=5000, use_re=False, **query):
         return wait_function(timeout, use_re, find_elements_by_query, self, **query)
+    def check_element_exist(self,timeout=5000, use_re=False, **query):
+        return wait_exist(timeout, use_re, find_elements_by_query, self, **query)
+
+
 
     @classmethod
     def with_ref(cls, ref):
