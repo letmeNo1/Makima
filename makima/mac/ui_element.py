@@ -6,10 +6,10 @@ import ApplicationServices as AppServ
 from PyObjCTools import AppHelper
 import HIServices
 
-from apollo.makima_for_jdo.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
+from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
     wait_exist
-from apollo.makima_for_jdo.mac.utils.common import input_text, clear
-from apollo.makima_for_jdo.mac.utils.mouse import *
+from makima.mac.utils.common import input_text, clear
+from makima.mac.utils.mouse import *
 
 """
 Library of Apple A11y functions

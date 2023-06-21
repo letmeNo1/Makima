@@ -1,4 +1,4 @@
-from apollo.makima_for_jdo.mac.call_mac_api.call_quartz_event_services import *
+from makima.mac.call_mac_api.call_quartz_event_services import *
 
 from makima.mac.call_mac_api.call_quartz_event_services import *
 
