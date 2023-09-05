@@ -1,8 +1,12 @@
 import re
 import platform
 
+import pkgutil
+
+
 from makima.helper.stack import Stack
-from makima.openCV.kmeans_run import kmeans_run
+if pkgutil.find_loader('cv2') is not None:
+    from makima.openCV.kmeans_run import kmeans_run
 if platform.system() == "Darwin":
     from makima.mac.image_object import ImageObject
 import time
