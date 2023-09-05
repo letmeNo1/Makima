@@ -1,10 +1,12 @@
 import re
+import platform
 
+from makima.helper.stack import Stack
 from makima.openCV.kmeans_run import kmeans_run
-from makima.mac.utils.stack import Stack
+if platform.system() == "Darwin":
+    from makima.mac.image_object import ImageObject
 import time
 
-from makima.mac.image_object import ImageObject
 
 
 def wait_function(timeout, use_re, func, *args, **query):

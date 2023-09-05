@@ -7,7 +7,6 @@ import comtypes.client
 
 from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
     wait_function_by_image, find_element_by_image
-from makima.windows.utils.common import show_windows, set_focus_window
 from makima.windows.utils.mouse import WinMouse
 from makima.windows.utils.keyboard import WinKeyboard
 

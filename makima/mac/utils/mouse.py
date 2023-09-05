@@ -1,7 +1,5 @@
 from makima.mac.call_mac_api.call_quartz_event_services import *
 
-from makima.mac.call_mac_api.call_quartz_event_services import *
-
 
 def left_mouse_move_event(x, y):
     mouse_move_event(x, y)
