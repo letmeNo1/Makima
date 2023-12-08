@@ -212,7 +212,13 @@ class WinKeyboard(IKeyboard):
         x = Input(ctypes.c_ulong(1), ii_)
         send_input(1, ctypes.pointer(x), ctypes.sizeof(x))
 
-    def send(self, *args, **kwargs):
+    def __create_key_combo(self, *keys):
+        key_combo = keys[-1]
+        for key in reversed(keys[:-1]):
+            key_combo = key.modify(key_combo)
+        return key_combo
+
+    def __send(self, *args, **kwargs):
         """
         Send key events as specified by Keys.
 
@@ -226,12 +232,17 @@ class WinKeyboard(IKeyboard):
         for key in args:
             if key.children:
                 self.press_key_and_hold(key.code)
-                self.send(*key.children)
+                self.__send(*key.children)
                 self.release_key(key.code)
             else:
                 self.press_key(key.code)
             self._wait_for_key_combo_to_be_processed()
             sleep(delay)
+
+    def send_keys(self, *keys, **kwargs):
+        key_combo = self.__create_key_combo(*keys)
+        self.__send(key_combo, **kwargs)
+
 
     @staticmethod
     def _wait_for_key_combo_to_be_processed():

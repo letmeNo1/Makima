@@ -5,7 +5,7 @@ import pyscreeze
 
 def kmeans_run(path, algorithms_name="SIFT", arg=0.7):
     algorithms_all = {
-        "SIFT": obr(),
+        "SIFT": cv2.SIFT_create(),
         "BRISK": cv2.BRISK_create(),
         "ORB": cv2.ORB_create()
     }

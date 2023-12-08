@@ -1,4 +1,7 @@
+import time
+
 import AppKit
+import psutil
 
 
 def get_frontmost_pid():
@@ -48,10 +51,26 @@ def get_pid_by_identifier(bundleIdentifier):
             return app.processIdentifier()
     return None
 
-def get_pid_by_name(name):
-    running_apps = AppKit.NSWorkspace.sharedWorkspace().runningApplications()
-    for app in running_apps:
-        if app.localizedName() == name:
-            return app.processIdentifier()
+def _get_pid_by_name(name):
+    # pool = AppKit.NSAutoreleasePool.alloc().init()
+    for proc in psutil.process_iter(['pid', 'name']):
+        # print(proc.info['name'])
+        if proc.info['name'] == name:
+            return proc.info['pid']
+            # print(proc.info['pid'])
     return None
+
+
+def get_pid_by_name(name):
+    for i in range(4):
+        pid = _get_pid_by_name(name)
+        if pid is not None:
+            break
+        else:
+            time.sleep(2)
+            continue
+    return pid
+
+
+# print(get_pid_by_name("Finder"))
 

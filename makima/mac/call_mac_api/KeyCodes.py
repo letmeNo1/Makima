@@ -1,3 +1,6 @@
+import Quartz
+
+
 class KeyCodes:
     kVK_ANSI_A = 0x00
     kVK_ANSI_S = 0x01
@@ -113,3 +116,15 @@ class KeyCodes:
     kVK_RightArrow = 0x7C
     kVK_DownArrow = 0x7D
     kVK_UpArrow = 0x7E
+
+
+class KeyCodesMaskFlag:
+    kCGEventFlagMaskShift = Quartz.kCGEventFlagMaskShift
+    kCGEventFlagMaskControl = Quartz.kCGEventFlagMaskControl
+    kCGEventFlagMaskAlternate = Quartz.kCGEventFlagMaskAlternate
+    kCGEventFlagMaskCommand = Quartz.kCGEventFlagMaskCommand
+    kCGEventFlagMaskSecondaryFn = Quartz.kCGEventFlagMaskSecondaryFn
+    kCGEventFlagMaskNumericPad = Quartz.kCGEventFlagMaskNumericPad
+    kCGEventFlagMaskAlphaShift = Quartz.kCGEventFlagMaskAlphaShift
+    kCGEventFlagMaskHelp = Quartz.kCGEventFlagMaskHelp
+    kCGEventFlagMaskNonCoalesced = Quartz.kCGEventFlagMaskNonCoalesced

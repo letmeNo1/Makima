@@ -1,5 +1,4 @@
 comtypes==1.1.13;sys_platform=="windows"
-numpy==1.23.2
 # opencv-python==4.6.0.66
 pyobjc==8.5.1;sys_platform=="darwin"
 PyScreeze==0.1.28

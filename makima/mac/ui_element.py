@@ -1,4 +1,5 @@
 import re
+import traceback
 
 import Cocoa
 import CoreFoundation
@@ -10,6 +11,7 @@ from makima.helper.find_ui_element import wait_function, find_element_by_query, 
     wait_exist
 from makima.mac.utils.common import input_text, clear
 from makima.mac.utils.mouse import *
+from apollo.systemlogger import Logger
 
 """
 Library of Apple A11y functions
@@ -115,7 +117,7 @@ class ErrorCommon(Error):
     pass
 
 
-class MacUIElement(object):
+class MacUIElement(MacMouse):
     """
     Apple AXUIElement object
     """
@@ -128,12 +130,13 @@ class MacUIElement(object):
     """
 
     def __init__(self, ref=None, callback_fn=None, callback_args=None, callback_kwargs=None, observer_res=None):
-        super(MacUIElement, self).__init__()
         self.ref = ref
         self.callbackFn = callback_fn
         self.callbackArgs = callback_args
         self.callbackKwargs = callback_kwargs
         self.observerRes = observer_res
+        self.get_last_ele = None
+        self.get_next_ele = None
 
     def get_attributes(self):
         """
@@ -179,6 +182,7 @@ class MacUIElement(object):
         :return:
         """
         err, attr_value = HIServices.AXUIElementCopyAttributeValue(self.ref, attr, None)
+        # print(attr_value)
         if err == HIServices.kAXErrorNoValue:
             return
 
@@ -196,7 +200,7 @@ class MacUIElement(object):
         :param args:
         :return:
         """
-        self._getAttribute(attr)
+        self.get_attribute(attr)
         err, to_set = HIServices.AXUIElementCopyAttributeValue(self.ref, attr, None)
         if err != AppServ.kAXErrorSuccess:
             set_error(err, 'Error retrieving attribute to set')
@@ -261,15 +265,26 @@ class MacUIElement(object):
             return None
 
     def get_acc_children_elements(self):
-        rst = self.get_attribute(AppServ.kAXChildrenAttribute)
-        if rst is None:
-            return []
-        else:
-            return self.get_attribute(AppServ.kAXChildrenAttribute)
+        try:
+            rst = self.get_attribute(AppServ.kAXChildrenAttribute)
+
+            if rst is None:
+                return []
+            else:
+                return self.get_attribute(AppServ.kAXChildrenAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
 
     @property
     def get_position(self):
-        return self.get_attribute(AppServ.kAXPositionAttribute)
+        try:
+            return self.get_attribute(AppServ.kAXPositionAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
 
     @property
     def get_identifier(self):
@@ -279,7 +294,6 @@ class MacUIElement(object):
             return None
         except ErrorCommon:
             return None
-
 
     @property
     def get_size(self):
@@ -294,7 +308,6 @@ class MacUIElement(object):
         except ErrorCommon:
             return None
 
-
     @property
     def get_value(self):
         try:
@@ -307,7 +320,7 @@ class MacUIElement(object):
     @property
     def get_label(self):
         try:
-            return self.get_attribute(AppServ.kAXLabelValueAttribute)
+            return self.get_attribute("AXLabelUIElements")
         except ErrorUnsupported:
             return None
         except ErrorCommon:
@@ -345,6 +358,21 @@ class MacUIElement(object):
             return None
 
     @property
+    def get_selected(self):
+        try:
+            return self.get_attribute(AppServ.kAXSelectedAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
+
+    def set_last_ele(self, ele):
+        self.get_last_ele = ele
+
+    def set_next_ele(self, ele):
+        self.get_next_ele = ele
+
+    @property
     def get_center_coordinates(self):
         x, y = self.get_position.get("x"), self.get_position.get("y")
         w, h = self.get_size.get("w"), self.get_size.get("h")
@@ -354,15 +382,15 @@ class MacUIElement(object):
 
     def click(self):
         x, y = self.get_center_coordinates
-        left_mouse_single_click_event(x, y)
+        self.left_mouse_single_click_event(x, y)
 
     def double_click(self):
         x, y = self.get_center_coordinates
-        left_mouse_double_click_event(x, y)
+        self.left_mouse_double_click_event(x, y)
 
     def right_click(self):
         x, y = self.get_center_coordinates
-        right_mouse_single_click_event(x, y)
+        self.right_mouse_single_click_event(x, y)
 
     def drag(self, to_x, to_y, duration):
         x, y = self.get_center_coordinates
@@ -387,21 +415,24 @@ class MacUIElement(object):
            value = value
        '''
 
-    def find_element_by_wait(self, timeout=5000, use_re=False, **query):
+    def find_element_by_wait(self, timeout=5000, **query) -> MacUIElement:
         return wait_function(timeout, use_re, find_element_by_query, self, **query)
 
-    def find_next_element_by_wait(self, timeout=5000, use_re=False, **query):
-        return wait_function(timeout, use_re, find_element_by_query, self, "next", **query)
+    def find_elements_by_wait(self, timeout=5000,  **query) -> MacUIElement:
+        elements_ref = wait_function(timeout, find_elements_by_query, self, **query)
+        return elements_ref
 
-    def find_last_element_by_wait(self, timeout=5000, use_re=False, **query):
-        return wait_function(timeout, use_re, find_element_by_query, self, "last", **query)
-
-    def find_elements_by_wait(self, timeout=5000, use_re=False, **query):
-        return wait_function(timeout, use_re, find_elements_by_query, self, **query)
-    def check_element_exist(self,timeout=5000, use_re=False, **query):
-        return wait_exist(timeout, use_re, find_elements_by_query, self, **query)
-
-
+   
+    def check_element_exist(self, timeout=5000, **query):
+        # return wait_exist(timeout, use_re, find_elements_by_query, self, **query)
+        rst = False
+        try:
+            ele = wait_function(timeout, find_elements_by_query, self, **query)
+            if ele:
+                rst = True
+        except:
+            rst = False
+        return rst
 
     @classmethod
     def with_ref(cls, ref):

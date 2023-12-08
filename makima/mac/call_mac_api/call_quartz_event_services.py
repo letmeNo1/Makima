@@ -13,6 +13,7 @@ def scroll_wheel_event(wheel1, wheeCount=1):
     Quartz.CGEventPost(Quartz.kCGHIDEventTap, event)
 
 
+
 def left_mouse_move_event(x, y):
     mouse_move_event(x, y)
 
@@ -33,13 +34,10 @@ def right_mouse_click_event(x, y, click_count):
     Quartz.CGEventPost(Quartz.kCGHIDEventTap, event)
 
 
-def mouse_long_press_event(x, y):
+def mouse_long_press_event(x, y, duration):
     event = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventLeftMouseDown, (x, y), Quartz.kCGMouseButtonLeft)
     Quartz.CGEventPost(Quartz.kCGHIDEventTap, event)
-
-
-def mouse_long_release_event(x, y):
-    event = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventLeftMouseDown, (x, y), Quartz.kCGMouseButtonLeft)
+    time.sleep(duration)
     Quartz.CGEventSetType(event, Quartz.kCGEventLeftMouseUp)
     Quartz.CGEventPost(Quartz.kCGHIDEventTap, event)
 

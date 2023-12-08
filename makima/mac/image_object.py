@@ -1,5 +1,4 @@
-from makima.mac.utils.mouse import left_mouse_single_click_event, right_mouse_single_click_event, \
-    left_mouse_double_click_event
+from makima.windows.utils.mouse import WinMouse
 
 
 class ImageObject:
@@ -7,15 +6,17 @@ class ImageObject:
         self.x = x
         self.y = y
 
+    _mouse = WinMouse()
+
     def click(self):
         print(self.x)
-        left_mouse_single_click_event(self.x, self.y)
+        self._mouse.click(self.x, self.y)
 
     def right_click(self):
-        right_mouse_single_click_event(self.x, self.y)
+        self._mouse.click(self.x, self.y, self._mouse.RIGHT_BUTTON)
 
     def double_click(self):
-        left_mouse_double_click_event(self.x, self.y)
+        self._mouse.double_click(self.x, self.y)
 
     def drag_to(self, x2, y2, smooth=True):
         self._mouse.drag(self.x, self.y, x2, y2, smooth)

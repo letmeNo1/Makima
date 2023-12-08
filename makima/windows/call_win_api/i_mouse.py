@@ -1,5 +1,5 @@
 import abc
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABCMeta
 
 
 class IMouse(object):

@@ -1,12 +1,12 @@
 import ctypes
 import ctypes.wintypes
+import re
 from time import sleep
 
-from makima.windows.utils import common
 from makima.windows.call_win_api.i_mouse import IMouse
+from makima.windows.utils.common import WinCommon
 
-
-class WinMouse(IMouse):
+class WinMouse(IMouse,WinCommon):
     _MOUSEEVENTF_MOVE = 0x0001  # mouse move
     _MOUSEEVENTF_LEFTDOWN = 0x0002  # left button down
     _MOUSEEVENTF_LEFTUP = 0x0004  # left button up
@@ -26,6 +26,60 @@ class WinMouse(IMouse):
     LEFT_BUTTON = u'b1c'
     RIGHT_BUTTON = u'b3c'
     _SUPPORTED_BUTTON_NAMES = [LEFT_BUTTON, RIGHT_BUTTON]
+
+
+    def _convert_wildcard_to_regex(self, wildcard):
+        """
+        Converts wildcard to regex.
+
+        :param str wildcard: wildcard.
+        :rtype: str
+        :return: regex pattern.
+        """
+        regex = re.escape(wildcard)
+        regex = regex.replace(r'\?', r'[\s\S]{1}')
+        regex = regex.replace(r'\*', r'[\s\S]*')
+
+        return '^%s$' % regex
+
+    def _replace_inappropriate_symbols(self, text):
+        """
+        Replaces inappropriate symbols e.g. \xa0 (non-breaking space) to
+        normal space.
+
+        :param str text: text in which symbols should be replaced.
+        :rtype: str
+        :return: processed text.
+        """
+        replace_pairs = [(u'\xa0', ' '),
+                         (u'\u2014', '-')]
+
+        for from_, to_ in replace_pairs:
+            text = text.replace(from_, to_)
+
+        return text
+    def _verify_xy_coordinates(self,x, y):
+        """
+        Verifies that x and y is instance of int otherwise raises exception.
+
+        :param x: x variable.
+        :param y: y variable.
+        """
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            raise Exception(
+                'x and y arguments should hold int coordinates.')
+
+    def _verify_mouse_button_name(self,button_name, supported_names):
+        """
+           Verifies that button name is supported otherwise raises exception.
+
+           :param str button_name: button name.
+           :param list[str] supported_names: supported button names.
+           """
+        if button_name not in supported_names:
+            raise Exception(
+                'Button name should be one of supported %s.' %
+                repr(supported_names))
 
     def _compose_mouse_event(self, name, press=True, release=False):
         """
@@ -99,7 +153,7 @@ class WinMouse(IMouse):
             flags, int(x_calc), int(y_calc), data, extra_info)
 
     def move(self, x, y, smooth=True):
-        common.verify_xy_coordinates(x, y)
+        self._verify_xy_coordinates(x, y)
 
         old_x, old_y = self.get_position()
 
@@ -112,16 +166,16 @@ class WinMouse(IMouse):
                            int(intermediate_x), int(intermediate_y), 0, 0)
 
     def drag(self, x1, y1, x2, y2, smooth=True):
-        common.verify_xy_coordinates(x1, y1)
-        common.verify_xy_coordinates(x2, y2)
+        self._verify_xy_coordinates(x1, y1)
+        self._verify_xy_coordinates(x2, y2)
 
         self.press_button(x1, y1, self.LEFT_BUTTON)
         self.move(x2, y2, smooth=smooth)
         self.release_button(self.LEFT_BUTTON)
 
     def press_button(self, x, y, button_name=LEFT_BUTTON):
-        common.verify_xy_coordinates(x, y)
-        common.verify_mouse_button_name(button_name,
+        self._verify_xy_coordinates(x, y)
+        self._verify_mouse_button_name(button_name,
                                  self._SUPPORTED_BUTTON_NAMES)
 
         self.move(x, y)
@@ -130,7 +184,7 @@ class WinMouse(IMouse):
             0, 0, 0, 0)
 
     def release_button(self, button_name=LEFT_BUTTON):
-        common.verify_mouse_button_name(button_name,
+        self._verify_mouse_button_name(button_name,
                                  self._SUPPORTED_BUTTON_NAMES)
 
         self._do_event(
@@ -138,8 +192,8 @@ class WinMouse(IMouse):
             0, 0, 0, 0)
 
     def click(self, x, y, need_move=False, button_name=LEFT_BUTTON):
-        common.verify_xy_coordinates(x, y)
-        common.verify_mouse_button_name(button_name,
+        self._verify_xy_coordinates(x, y)
+        self._verify_mouse_button_name(button_name,
                                  self._SUPPORTED_BUTTON_NAMES)
         self.move(x, y, need_move)
         self._do_event(
@@ -147,9 +201,8 @@ class WinMouse(IMouse):
             0, 0, 0, 0)
 
     def double_click(self, x, y, button_name=LEFT_BUTTON):
-        common.verify_xy_coordinates(x, y)
-        common.verify_mouse_button_name(button_name,
-                                 self._SUPPORTED_BUTTON_NAMES)
+        self._verify_xy_coordinates(x, y)
+        self._verify_mouse_button_name(button_name,self._SUPPORTED_BUTTON_NAMES)
 
         self.move(x, y)
         self._do_event(
@@ -160,7 +213,7 @@ class WinMouse(IMouse):
             0, 0, 0, 0)
 
     def wheel(self, x, y, movement):
-        common.verify_xy_coordinates(x, y)
+        self._verify_xy_coordinates(x, y)
         self.move(x, y, False)
         self._do_event(self._MOUSEEVENTF_WHEEL, x, y, movement, 0)
 

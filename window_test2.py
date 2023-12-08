@@ -1,5 +1,6 @@
-from makima.helper.operation_win import initialize_app_ref_for_win
-from makima.windows.utils.common import find_windows, set_focus_window
+from makima.windows.utils.common import WinCommon
+
+from makima.helper.operation_win import Init_App_Ref_For_Win
 
 import os
 import time
@@ -10,10 +11,13 @@ class MyTest(unittest.TestCase):
     def setUp(self):
         os.system(r"C:\Windows\System32\calc.exe")
         time.sleep(2)
-        self.calculator = initialize_app_ref_for_win("Calculator")
+        self.makima = Init_App_Ref_For_Win()
+        self.makima_common = WinCommon()
+
+        self.calculator = self.makima("Calculator")
         # Make the window appear at frontends
-        hwnd = find_windows("Calculator")[0]
-        set_focus_window(hwnd)
+        hwnd = self.makima_common.find_windows("Calculator")[0]
+        self.makima_common.set_focus_window(hwnd)
 
     def tearDown(self):
         os.system('taskkill /f /t /im ' + "calculator.exe")
