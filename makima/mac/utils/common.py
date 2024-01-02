@@ -1,7 +1,5 @@
 import Cocoa
 import Quartz
-from makima.mac.call_mac_api.KeyCodes import KeyCodes
-
 from makima.mac.utils.keyboard import MacKeyBoard
 from makima.mac.utils.mouse import MacMouse
 

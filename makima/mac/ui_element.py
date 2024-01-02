@@ -317,7 +317,7 @@ class MacUIElement(object):
     @property
     def get_label(self):
         try:
-            return self.__get_attribute("AXLabelUIElements")
+            return self.__get_attribute(AppServ.kAXLabelValueAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:

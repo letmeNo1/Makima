@@ -19,15 +19,19 @@ class MyTest(unittest.TestCase):
         assert self.makima_common.is_finished_launching("Calculator") is True
 
     def tearDown(self):
-        os.system("""osascript -e 'tell app "Calculator" to quit'""")
+        pass
+        # os.system("""osascript -e 'tell app "Calculator" to quit'""")
 
     def test_calculator(self):
-        self.calculator.eles(title="3")[1].click()
-        self.calculator.eles(title="2")[1].click()
-        self.calculator.eles(title="×")[0].click()
-        self.calculator.eles(title="3")[1].click()
-        self.calculator.eles(title="2")[1].click()
-        self.calculator.eles(title="=")[0].click()
+        aa = self.calculator.get_acc_children_elements()
+        # for a in aa:
+        #     print(a.get_title)
+        self.calculator.ele(title="3").click()
+        self.calculator.ele(title="2").click()
+        self.calculator.ele(title="×").click()
+        self.calculator.ele(title="3").click()
+        self.calculator.ele(title="2").click()
+        self.calculator.ele(title="=").click()
         time.sleep(2)
         assert self.calculator.eles(role="AXStaticText")[1].get_value == "1024"
 

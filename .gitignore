@@ -5,3 +5,4 @@ Makima.egg-info/
 build/
 dist/
 Makima_Apollo.egg-info/
+.idea/misc.xml
