@@ -1,5 +1,7 @@
 from __future__ import annotations
 import re
+from typing import List
+
 import Cocoa
 import CoreFoundation
 import ApplicationServices as AppServ
@@ -386,23 +388,23 @@ class MacUIElement(object):
 
         return x, y
 
-    def click(self, x_coordinate, y_coordinate, x_offset, y_offset):
+    def click(self, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.left_mouse_single_click_event(x, y)
 
-    def hover(self, x_coordinate, y_coordinate, x_offset, y_offset):
+    def hover(self,x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.left_mouse_move_event(x, y)
 
-    def double_click(self, x_coordinate, y_coordinate, x_offset, y_offset):
+    def double_click(self, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.left_mouse_double_click_event(x, y)
 
-    def right_click(self, x_coordinate, y_coordinate, x_offset, y_offset):
+    def right_click(self, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.right_mouse_single_click_event(x, y)
 
-    def drag_to(self,to_x, to_y, duration, x_coordinate, y_coordinate, x_offset, y_offset):
+    def drag_to(self,to_x, to_y, duration, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         left_mouse_dragged_event(x, y, to_x, to_y, duration)
 
@@ -428,7 +430,7 @@ class MacUIElement(object):
     def ele(self, timeout=5, **query) -> MacUIElement:
         return wait_function(timeout, find_element_by_query, self, **query)
 
-    def eles(self, timeout=5, **query) -> MacUIElement:
+    def eles(self, timeout=5, **query) -> List[MacUIElement]:
         elements_ref = wait_function(timeout, find_elements_by_query, self, **query)
         return elements_ref
 
