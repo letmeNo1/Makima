@@ -5,7 +5,7 @@ from makima.mac.call_mac_api.KeyCodes import KeyCodes
 from makima.mac.utils.keyboard import MacKeyBoard
 from makima.mac.utils.mouse import MacMouse
 
-from ApolloModule.ApolloMakima.makima.mac.call_mac_api.call_app_kit import CallAppKit
+from makima.mac.call_mac_api.call_app_kit import CallAppKit
 
 
 class MacCommon(CallAppKit):
