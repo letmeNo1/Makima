@@ -17,7 +17,7 @@ class MyTest(unittest.TestCase):
         self.calculator = self.makima("Calculator")
         # Make the window appear at frontends
         hwnd = self.makima_common.find_windows("Calculator")[0]
-        self.makima_common.set_focus_window(hwnd)
+        hwnd.focus_window()
 
     def tearDown(self):
         os.system('taskkill /f /t /im ' + "calculator.exe")
@@ -25,12 +25,12 @@ class MyTest(unittest.TestCase):
     def test_calculator(self):
         # Do a 32 by 32 and get the result
         # self.calculator.find_element_by_image_by_wait("C:\\Users\\hanhuang\\001.png").double_click()
-        self.calculator.find_element_by_wait(automation_id="num2Button").click()
-        self.calculator.find_element_by_wait(automation_id="multiplyButton").click()
-        self.calculator.find_element_by_wait(automation_id="num3Button").click()
-        self.calculator.find_element_by_wait(automation_id="num2Button").click()
-        self.calculator.find_element_by_wait(automation_id="equalButton").click()
-        self.calculator.find_element_by_wait(automation_id="equalButton").click()
+        self.calculator.ele(automation_id="num2Button").click()
+        self.calculator.ele(automation_id="multiplyButton").click()
+        self.calculator.ele(automation_id="num3Button").click()
+        self.calculator.ele(automation_id="num2Button").click()
+        self.calculator.ele(automation_id="equalButton").click()
+        self.calculator.ele(automation_id="equalButton").click()
 
         time.sleep(2)
         # assert self.calculator.find_element_by_wait(automation_id="CalculatorResults").get_acc_name == "Display is 1,024"

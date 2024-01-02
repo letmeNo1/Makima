@@ -1,17 +1,14 @@
+from __future__ import annotations
 import re
-import traceback
-
 import Cocoa
 import CoreFoundation
 import ApplicationServices as AppServ
 from PyObjCTools import AppHelper
 import HIServices
 
-from makima.helper.find_ui_element import wait_function, find_element_by_query, find_elements_by_query, \
-    wait_exist
-from makima.mac.utils.common import input_text, clear
+from makima.helper.find_ui_element import *
+from makima.mac.utils.common import MacCommon
 from makima.mac.utils.mouse import *
-from apollo.systemlogger import Logger
 
 """
 Library of Apple A11y functions
@@ -117,7 +114,7 @@ class ErrorCommon(Error):
     pass
 
 
-class MacUIElement(MacMouse):
+class MacUIElement(object):
     """
     Apple AXUIElement object
     """
@@ -137,6 +134,8 @@ class MacUIElement(MacMouse):
         self.observerRes = observer_res
         self.get_last_ele = None
         self.get_next_ele = None
+        self._mouse = MacMouse()
+        self._common = MacCommon()
 
     def get_attributes(self):
         """
@@ -175,14 +174,13 @@ class MacUIElement(MacMouse):
         if err != AppServ.kAXErrorSuccess:
             set_error(err, 'Error performing requested action')
 
-    def get_attribute(self, attr):
+    def __get_attribute(self, attr):
         """
         Get the value of the specified attribute
         :param args:
         :return:
         """
         err, attr_value = HIServices.AXUIElementCopyAttributeValue(self.ref, attr, None)
-        # print(attr_value)
         if err == HIServices.kAXErrorNoValue:
             return
 
@@ -194,13 +192,13 @@ class MacUIElement(MacMouse):
                 set_error(err, 'Error retrieving attribute')
         return cf_attribute_to_py_oject(self, attr_value)
 
-    def set_attribute(self, attr, val):
+    def __set_attribute(self, attr, val):
         """
         Set the specified attribute to the specified value
         :param args:
         :return:
         """
-        self.get_attribute(attr)
+        self.__get_attribute(attr)
         err, to_set = HIServices.AXUIElementCopyAttributeValue(self.ref, attr, None)
         if err != AppServ.kAXErrorSuccess:
             set_error(err, 'Error retrieving attribute to set')
@@ -218,10 +216,7 @@ class MacUIElement(MacMouse):
                 set_error(err, 'Invalid value for element attribute')
             set_error(err, 'Error setting attribute value')
 
-    # def __setattr__(self, name, value):
-    #     pass
-
-    def set_string(self, attribute, value):
+    def __set_string(self, attribute, value):
         err = HIServices.AXUIElementSetAttributeValue(self.ref, attribute, str(value))
         if err != AppServ.kAXErrorSuccess:
             set_error(err, 'Error setting attribute to string')
@@ -235,7 +230,7 @@ class MacUIElement(MacMouse):
             set_error(error_code, 'Error retrieving PID')
         return pid
 
-    def set_timeout(self, newTimeout):
+    def __set_timeout(self, newTimeout):
         if self.ref is None:
             raise ErrorUnsupported('Operation not supported on null element references')
 
@@ -258,7 +253,7 @@ class MacUIElement(MacMouse):
     @property
     def get_role(self):
         try:
-            return self.get_attribute(AppServ.kAXRoleAttribute)
+            return self.__get_attribute(AppServ.kAXRoleAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
@@ -266,21 +261,22 @@ class MacUIElement(MacMouse):
 
     def get_acc_children_elements(self):
         try:
-            rst = self.get_attribute(AppServ.kAXChildrenAttribute)
+            rst = self.__get_attribute(AppServ.kAXChildrenAttribute)
 
             if rst is None:
                 return []
             else:
-                return self.get_attribute(AppServ.kAXChildrenAttribute)
+                return self.__get_attribute(AppServ.kAXChildrenAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
             return None
+        except ErrorCannotComplete:
+            return None
 
-    @property
     def get_position(self):
         try:
-            return self.get_attribute(AppServ.kAXPositionAttribute)
+            return self.__get_attribute(AppServ.kAXPositionAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
@@ -289,20 +285,19 @@ class MacUIElement(MacMouse):
     @property
     def get_identifier(self):
         try:
-            return self.get_attribute(AppServ.kAXIdentifierAttribute)
+            return self.__get_attribute(AppServ.kAXIdentifierAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
             return None
 
-    @property
     def get_size(self):
-        return self.get_attribute(AppServ.kAXSizeAttribute)
+        return self.__get_attribute(AppServ.kAXSizeAttribute)
 
     @property
     def get_title(self):
         try:
-            return self.get_attribute(AppServ.kAXTitleAttribute)
+            return self.__get_attribute(AppServ.kAXTitleAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
@@ -311,7 +306,7 @@ class MacUIElement(MacMouse):
     @property
     def get_value(self):
         try:
-            return self.get_attribute(AppServ.kAXValueAttribute)
+            return self.__get_attribute(AppServ.kAXValueAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
@@ -320,7 +315,7 @@ class MacUIElement(MacMouse):
     @property
     def get_label(self):
         try:
-            return self.get_attribute("AXLabelUIElements")
+            return self.__get_attribute("AXLabelUIElements")
         except ErrorUnsupported:
             return None
         except ErrorCommon:
@@ -329,20 +324,19 @@ class MacUIElement(MacMouse):
     @property
     def get_role_description(self):
         try:
-            return self.get_attribute(AppServ.kAXRoleDescriptionAttribute)
+            return self.__get_attribute(AppServ.kAXRoleDescriptionAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
             return None
 
-    @property
     def get_parent(self):
-        return self.get_attribute(AppServ.kAXParentAttribute)
+        return self.__get_attribute(AppServ.kAXParentAttribute)
 
     @property
     def get_help(self):
         try:
-            return self.get_attribute(AppServ.kAXHelpAttribute)
+            return self.__get_attribute(AppServ.kAXHelpAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
@@ -351,58 +345,74 @@ class MacUIElement(MacMouse):
     @property
     def get_sub_role(self):
         try:
-            return self.get_attribute(AppServ.kAXSubroleAttribute)
+            return self.__get_attribute(AppServ.kAXSubroleAttribute)
         except ErrorUnsupported:
             return None
         except ErrorCommon:
             return None
 
     @property
-    def get_selected(self):
+    def get_selected(self) -> bool:
         try:
-            return self.get_attribute(AppServ.kAXSelectedAttribute)
+            return bool(self.__get_attribute(AppServ.kAXSelectedAttribute))
         except ErrorUnsupported:
             return None
         except ErrorCommon:
             return None
 
-    def set_last_ele(self, ele):
+    def _set_last_ele(self, ele):
         self.get_last_ele = ele
 
-    def set_next_ele(self, ele):
+    def _set_next_ele(self, ele):
         self.get_next_ele = ele
 
-    @property
     def get_center_coordinates(self):
-        x, y = self.get_position.get("x"), self.get_position.get("y")
-        w, h = self.get_size.get("w"), self.get_size.get("h")
+        x, y = self.get_position().get("x"), self.get_position().get("y")
+        w, h = self.get_size().get("w"), self.get_size().get("h")
         x = x + w / 2
         y = y + h / 2
         return x, y
 
-    def click(self):
-        x, y = self.get_center_coordinates
-        self.left_mouse_single_click_event(x, y)
+    def __get_coordinate(self, x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None):
+        if x_coordinate is not None:
+            x = x_coordinate
+            y = y_coordinate
+        else:
+            x, y = self.get_center_coordinates()
+            if x_offset is not None:
+                x = x + x_offset
+            elif y_offset is not None:
+                y = y + y_offset
 
-    def double_click(self):
-        x, y = self.get_center_coordinates
-        self.left_mouse_double_click_event(x, y)
+        return x, y
 
-    def right_click(self):
-        x, y = self.get_center_coordinates
-        self.right_mouse_single_click_event(x, y)
+    def click(self, x_coordinate, y_coordinate, x_offset, y_offset):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.left_mouse_single_click_event(x, y)
 
-    def drag(self, to_x, to_y, duration):
-        x, y = self.get_center_coordinates
+    def hover(self, x_coordinate, y_coordinate, x_offset, y_offset):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.left_mouse_move_event(x, y)
+
+    def double_click(self, x_coordinate, y_coordinate, x_offset, y_offset):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.left_mouse_double_click_event(x, y)
+
+    def right_click(self, x_coordinate, y_coordinate, x_offset, y_offset):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.right_mouse_single_click_event(x, y)
+
+    def drag_to(self,to_x, to_y, duration, x_coordinate, y_coordinate, x_offset, y_offset):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         left_mouse_dragged_event(x, y, to_x, to_y, duration)
 
     def input_text(self, text):
         x, y = self.get_center_coordinates
-        input_text(x, y, text)
+        self._common.input_text(x, y, text)
 
     def clear(self):
         x, y = self.get_center_coordinates
-        clear(x, y)
+        self._common.clear(x, y)
 
     '''
        query:
@@ -415,23 +425,15 @@ class MacUIElement(MacMouse):
            value = value
        '''
 
-    def find_element_by_wait(self, timeout=5000, **query) -> MacUIElement:
-        return wait_function(timeout, use_re, find_element_by_query, self, **query)
+    def ele(self, timeout=5, **query) -> MacUIElement:
+        return wait_function(timeout, find_element_by_query, self, **query)
 
-    def find_elements_by_wait(self, timeout=5000,  **query) -> MacUIElement:
+    def eles(self, timeout=5, **query) -> MacUIElement:
         elements_ref = wait_function(timeout, find_elements_by_query, self, **query)
         return elements_ref
 
-   
-    def check_element_exist(self, timeout=5000, **query):
-        # return wait_exist(timeout, use_re, find_elements_by_query, self, **query)
-        rst = False
-        try:
-            ele = wait_function(timeout, find_elements_by_query, self, **query)
-            if ele:
-                rst = True
-        except:
-            rst = False
+    def check_element_exist(self, timeout=5, **query):
+        rst = wait_exist(timeout, find_element_by_query, self, **query)
         return rst
 
     @classmethod

@@ -2,15 +2,18 @@ import os
 import time
 import unittest
 
-from makima.helper.operation_mac import initialize_app_ref_for_mac
-from makima.mac.utils.common import active_window, is_finished_launching
+from makima.helper.operation_mac import Init_App_Ref_For_Mac
+from makima.mac.utils.common import MacCommon
 
 
 class MyTest(unittest.TestCase):
     def setUp(self):
         os.system("""osascript -e 'tell app "Calculator" to open'""")
         time.sleep(2)
-        self.calculator = initialize_app_ref_for_mac("Calculator")
+        self.makima = Init_App_Ref_For_Mac()
+        self.makima_common = MacCommon()
+        self.makima.
+
         # Make the window appear at frontends
         active_window("Calculator")
         assert is_finished_launching("Calculator") is True

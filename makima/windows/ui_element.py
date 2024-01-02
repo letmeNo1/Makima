@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 from __future__ import annotations
+from typing import List
 
-from collections import deque
-from xml.dom import minidom
-
+import _ctypes
 import comtypes.client
 from makima.windows.static_variable import state_dict, _control_type, property_id, _tree_scope
 
@@ -13,6 +12,8 @@ from makima.windows.utils.keyboard import WinKeyboard
 import comtypes.client
 
 from makima.helper.find_ui_element import *
+
+from makima.windows.static_variable import role_dict
 
 CO_E_OBJNOTCONNECTED = -2147220995
 UIAutomationCore = comtypes.client.GetModule("UIAutomationCore.dll")
@@ -30,11 +31,10 @@ class WinUIElement(object):
     def __init__(self, IUIAutomationElement):
         self.__IUIAutomationElement = IUIAutomationElement
         self.current_hwnd = None
-        self.mouse = WinMouse()
-        self.keyboard = WinKeyboard()
-        self.get_last_ele = None
-        self.get_next_ele = None
-
+        self._mouse = WinMouse()
+        self._keyboard = WinKeyboard()
+        self.get_last_ele: WinUIElement = None
+        self.get_next_ele: WinUIElement = None
 
     def __get_state_text(self, state_code):
         state_text = []
@@ -43,7 +43,14 @@ class WinUIElement(object):
                 state_text.append(text)
         return state_text
 
-    def set_current_hwnd(self, hwnd):
+    def __get_IUIAutomationElement_attr(self, attr):
+        try:
+            attr = getattr(self.__IUIAutomationElement, attr)
+        except _ctypes.COMError:
+            attr = ""
+        return attr
+
+    def _set_current_hwnd(self, hwnd):
         self.current_hwnd = hwnd
 
     @property
@@ -52,7 +59,7 @@ class WinUIElement(object):
 
     @property
     def get_CachedNativeWindowHandle(self):
-        hwnd = self.__IUIAutomationElement.CurrentNativeWindowHandle
+        hwnd = self.__get_IUIAutomationElement_attr("CurrentNativeWindowHandle")
         return hwnd
 
     @property
@@ -71,28 +78,29 @@ class WinUIElement(object):
         """Retrieves the UI Automation element value
         :rtype : unicode
         """
-        IUnknown = self.__IUIAutomationElement.GetCurrentPattern(UIAutomationClient.UIA_TextPatternId)
-        IUIAutomationTextPattern = IUnknown.QueryInterface(UIAutomationClient.IUIAutomationTextPattern)
-        return IUIAutomationTextPattern.DocumentRange.getText(-1)
+        return self.__get_iaccessible_property(property_id["LegacyIAccessibleValueProperty"])
 
     CurrentValue = get_acc_value
+
+    @property
+    def get_acc_keyboardshortcut(self):
+        return self.__get_iaccessible_property(property_id["LegacyIAccessibleKeyboardShortcutProperty"])
 
     @property
     def get_automation_id(self):
         """Retrieves the UI Automation identifier of the element
         :rtype : unicode
         """
-        return self.__IUIAutomationElement.CurrentAutomationId
+        return self.__get_IUIAutomationElement_attr("CurrentAutomationId")
 
     AutomationId = get_automation_id
 
-    @property
     def get_acc_location(self):
         """Retrieves the coordinates of the rectangle that completely encloses the element.
         Returns tuple (left, top, right, bottom)
         :rtype : tuple
         """
-        rect = self.__IUIAutomationElement.CurrentBoundingRectangle
+        rect = self.__get_IUIAutomationElement_attr("CurrentBoundingRectangle")
         return rect.left, rect.top, rect.right, rect.bottom
 
     BoundingRectangle = get_acc_location
@@ -102,7 +110,7 @@ class WinUIElement(object):
         """Retrieves the class name of the element
         :rtype : unicode
         """
-        return self.__IUIAutomationElement.CurrentClassName
+        return self.__get_IUIAutomationElement_attr("CurrentClassName")
 
     ClassName = get_class_name
 
@@ -111,7 +119,7 @@ class WinUIElement(object):
         """Retrieves the control type of the element
         :rtype : int
         """
-        return self.__IUIAutomationElement.CurrentControlType
+        return self.__get_IUIAutomationElement_attr("CurrentControlType")
 
     ControlType = get_control_type
 
@@ -130,7 +138,7 @@ class WinUIElement(object):
         """Indicates whether the element is enabled
         :rtype : bool
         """
-        return bool(self.__IUIAutomationElement.CurrentIsEnabled)
+        return bool(self.__get_IUIAutomationElement_attr("CurrentIsEnabled"))
 
     IsEnabled = get_is_enabled
 
@@ -139,7 +147,8 @@ class WinUIElement(object):
         """Retrieves the name of the element
         :rtype : unicode
         """
-        return self.__IUIAutomationElement.CurrentName
+        return self.__get_IUIAutomationElement_attr("CurrentName")
+
 
     Name = get_acc_name
 
@@ -152,7 +161,7 @@ class WinUIElement(object):
 
     DefaultAction = get_default_action
 
-    def set_value(self, value):
+    def _set_value(self, value):
         """Retrieves the UI Automation element value
         :rtype : unicode
         """
@@ -171,26 +180,30 @@ class WinUIElement(object):
         else:
             return None
 
-    def set_last_ele(self,ele):
-         self.get_last_ele = ele
-        
-    def set_next_ele(self,ele):
-         self.get_next_ele = ele
+    def _set_last_ele(self, ele):
+        self.get_last_ele = ele
 
+    def _set_next_ele(self, ele):
+        self.get_next_ele = ele
 
     @property
     def get_description(self):
-        return self.get_iaccessible_property(property_id.LegacyIAccessibleDescriptionProperty)
+        return self.__get_iaccessible_property(property_id["LegacyIAccessibleDescriptionProperty"])
 
     @property
     def get_acc_role(self):
-        return self.__IUIAutomationElement.CurrentAriaRole
+        return role_dict.get(int(self.__get_iaccessible_property(property_id["LegacyIAccessibleRoleProperty"])))
 
     @property
     def get_state(self):
-        return self.__get_state_text(self.get_iaccessible_property(property_id["LegacyIAccessibleStateProperty"]))
+        return self.__get_state_text(self.__get_iaccessible_property(property_id["LegacyIAccessibleStateProperty"]))
 
-    def get_iaccessible_property(self, propertyId):
+    @property
+    def get_window_state(self):
+        state = {0: "standard", 1: "maxiuim", 2: "minimize"}
+        return state.get(int(self.__get_iaccessible_property(property_id["WindowWindowVisualStateProperty"])))
+
+    def __get_iaccessible_property(self, propertyId):
         return self.__IUIAutomationElement.GetCurrentPropertyValue(propertyId)
 
     def _build_condition(self, Name, ControlType, AutomationId):
@@ -261,7 +274,7 @@ class WinUIElement(object):
         return [WinUIElement(IUIAutomationElementArray.GetElement(i)) for i in
                 range(IUIAutomationElementArray.Length)]
 
-    def Invoke(self):
+    def __invoke(self):
         IUnknown = self.__IUIAutomationElement.GetCurrentPattern(UIAutomationClient.UIA_InvokePatternId)
         IUIAutomationInvokePattern = IUnknown.QueryInterface(UIAutomationClient.IUIAutomationInvokePattern)
         IUIAutomationInvokePattern.Invoke()
@@ -270,28 +283,27 @@ class WinUIElement(object):
         return '<%s (Name: %s, Class: %s, AutomationId: %s>' % (
             self.get_control_type_name, self.get_acc_name, self.get_class_name, self.get_automation_id)
 
-    def toxml(self):
-        xml = minidom.Document()
-        queue = deque()
-        queue.append((self, xml))
-        while queue:
-            element, xml_node = queue.popleft()
-            xml_element = minidom.Element(element.CurrentControlTypeName)
-            xml_element.setAttribute('Name', str(element.CurrentName))
-            xml_element.setAttribute('AutomationId', str(element.CurrentAutomationId))
-            xml_element.setAttribute('ClassName', str(element.CurrentClassName))
-            xml_element.ownerDocument = xml
-            xml_node.appendChild(xml_element)
-            for child in element.__findall('children'):
-                queue.append((child, xml_element))
-        return xml.toprettyxml()
+    def get_acc_children_elements(self) -> List[WinUIElement]:
+        children_list = []
+        condition = _IUIAutomation.CreateTrueCondition()
+        tree_scope = comtypes.gen.UIAutomationClient.TreeScope_Children
+        children = self.__IUIAutomationElement.FindAll(tree_scope, condition)
+        for i in range(children.Length):
+            child = children.GetElement(i)
+            if WinUIElement(child).get_acc_name != "Desktop" and WinUIElement(child).get_acc_name != "Program Manager":
+                children_list.append(WinUIElement(child))
 
-    def get_acc_children_elements(self):
-        return self.__findall("children")
+        return children_list
+
+    def get_parent(self) -> WinUIElement:
+        return self.__findall("parent")[0]
+
+    def get_subtree(self) -> List[WinUIElement]:
+        return self.__findall("subtree")
 
     @property
     def get_CachedNativeWindowHandle(self):
-        hwnd = self.__IUIAutomationElement.CurrentNativeWindowHandle
+        hwnd = self.__get_IUIAutomationElement_attr("CurrentNativeWindowHandle")
         return hwnd
 
     '''
@@ -303,111 +315,81 @@ class WinUIElement(object):
         control_type_name=control type name
     '''
 
-    def find_element_by_image_by_wait(self, path, timeout=5000, distance=0.4, algorithms_name="SIFT"):
-        return wait_function_by_image(timeout, find_element_by_image, path, distance, algorithms_name)
-
-    def find_element_by_wait(self, timeout=5000, **query) -> WinUIElement:
+    def ele(self, timeout=5, **query) -> WinUIElement:
         return wait_function(timeout, find_element_by_query, self, **query)
 
-    def find_elements_by_wait(self, timeout=5000, **query) -> WinUIElement:
+    def any_ele(self, query, timeout=5) -> WinUIElement:
+        return wait_any(timeout, find_element_by_query, self, query)
+
+    def eles(self, timeout=5, **query) -> List[WinUIElement]:
         return wait_function(timeout, find_elements_by_query, self, **query)
 
-    def check_element_exist(self, timeout=5000, **query):
-        rst = False
-        try:
-            ele = wait_function(timeout, find_elements_by_query, self, **query)
-            if ele:
-                rst = True
-        except:
-            rst = False
+    def check_element_exist(self, timeout=5, **query):
+        rst = wait_exist(timeout, find_element_by_query, self, **query)
         return rst
 
-    def scroll_to_find_element(self, scroll_time=15, timeout=5000, **query):
+    def scroll_to_find_element(self, scroll_time=15, timeout=5, **query):
         for i in range(int(scroll_time)):
             ele = wait_function(timeout, find_element_by_query, self, **query)
             if "invisible" not in ele.get_state:
                 return ele
             else:
-                self.keyboard.send_keys(self.keyboard.codes.DOWN)
+                self._keyboard.send_keys(self._keyboard.codes.DOWN)
 
         return None
 
-    def click(self, need_move=False, x_offset=None, y_offset=None):
-        if x_offset is not None:
-            x = x_offset
-            y = y_offset
+    def __get_coordinate(self, x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None):
+        if x_coordinate is not None:
+            x = x_coordinate
+            y = y_coordinate
         else:
-            rect = self.get_acc_location
-            x = rect[0] + (rect[2] - rect[0]) / 2
-            y = rect[1] + (rect[3] - rect[1]) / 2
+            rect = self.get_acc_location()
+            width = (rect[2] - rect[0])
+            hight = (rect[3] - rect[1])
+            x = rect[0] + width / 2
+            y = rect[1] + hight / 2
 
-        self.mouse.click(x, y, need_move)
+            if x_offset is not None:
+                x = x + int(width / 2 * x_offset)
+            elif y_offset is not None:
+                y = y + int(hight / 2 * y_offset)
 
-    def hover(self, need_move=False, x_offset=None, y_offset=None):
-        if x_offset is not None:
-            x = x_offset
-            y = y_offset
-        else:
-            rect = self.get_acc_location
+        return x, y
 
-            x = rect[0] + (rect[2] - rect[0]) / 2
-            y = rect[1] + (rect[3] - rect[1]) / 2
-            print(x, y)
+    def click(self, x_coordinate=None, y_coordinate=None, x_offset: float = None,
+              y_offset: float = None, need_move=False):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.click(x, y, need_move)
 
-        self.mouse.move(x, y, need_move)
+    def hover(self, x_coordinate=None, y_coordinate=None, x_offset: float = None,
+              y_offset: float = None, need_move=False,):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.move(x, y, need_move)
 
-    def input(self, content, x_offset=None, y_offset=None):
-        if x_offset is not None:
-            x = x_offset
-            y = y_offset
-        else:
-            rect = self.get_acc_location
-            x = rect[0] + (rect[2] - rect[0]) / 2
-            y = rect[1] + (rect[3] - rect[1]) / 2
-        self.mouse.click(x, y)
-        self.keyboard.copy_text(content)
-        time.sleep(1)
-        self.keyboard.send(self.keyboard.codes.CONTROL.modify(self.keyboard.codes.KEY_V), delay=1)
+    def right_click(self, x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None, need_move=False):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.click(x, y, need_move, self._mouse.RIGHT_BUTTON)
 
-    def right_click(self, need_move=False, x_offset=None, y_offset=None):
-        if x_offset is not None:
-            x = x_offset
-            y = y_offset
-        else:
-            rect = self.get_acc_location
-            x = rect[0] + (rect[2] - rect[0]) / 2
-            y = rect[1] + (rect[3] - rect[1]) / 2
-        self.mouse.click(x, y, need_move, self.mouse.RIGHT_BUTTON)
+    def double_click(self, x_coordinate=None, y_coordinate=None, x_offset: float = None,
+              y_offset: float = None):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
 
-    def double_click(self, x_offset=None, y_offset=None):
-        if x_offset is not None:
-            x = x_offset
-            y = y_offset
-        else:
-            rect = self.get_acc_location
-            x = rect[0] + (rect[2] - rect[0]) / 2
-            y = rect[1] + (rect[3] - rect[1]) / 2
-        self.mouse.double_click(x, y)
+        self._mouse.double_click(x, y)
 
-    def drag_to(self, x2, y2, x_offset=None, y_offset=None, smooth=True):
-        if x_offset is not None:
-            x = x_offset
-            y = y_offset
-        else:
-            rect = self.get_acc_location
-            x = rect[0] + (rect[2] - rect[0]) / 2
-            y = rect[1] + (rect[3] - rect[1]) / 2
-        self.mouse.drag(x, y, x2, y2, smooth)
+    def drag_to(self, x2, y2, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None, smooth=True):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.drag(x, y, x2, y2, smooth)
+
+    def wheel_to(self, distans, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
+        x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
+        self._mouse.wheel(x, y, distans)
 
     def input_text(self, text):
         self.click()
-        self.keyboard.copy_text(text)
-        self.keyboard.send(self.keyboard.codes.CONTROL.modify(self.keyboard.codes.KEY_V), delay=1)
+        self._keyboard.copy_text(text)
+        self._keyboard.send_keys(self._keyboard.codes.CONTROL, self._keyboard.codes.KEY_V, delay=1)
 
     def clear(self):
         self.click()
-        self.keyboard.send(self.keyboard.codes.CONTROL.modify(self.keyboard.codes.KEY_A), delay=1)
-        self.keyboard.send(self.keyboard.codes.DELETE)
-
-
-
+        self._keyboard.send_keys(self._keyboard.codes.CONTROL, self._keyboard.codes.KEY_A, delay=1)
+        self._keyboard.send_keys(self._keyboard.codes.DELETE)
