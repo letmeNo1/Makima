@@ -48,33 +48,14 @@ from apollo_makima.helper.operation_mac import Init_App_Ref_For_Mac
 
 makima = Init_App_Ref_For_Mac()    
 teams_ins = makima(name="Microsoft Teams")
-
-or
-
-from apollo_base.makima_base import MakimaBase
-
-class YourClass(MakimaBase)
-    super().__init__()
-
-def your_function
-    self.makima(name= Microsoft Teams")
 ```
 
-***For Windows：***
+ ***For Windows：***
  ```
 from apollo_makima.helper.operation_win import Init_App_Ref_For_Win
 
 makima = Init_App_Ref_For_Win()   
 teams_ins = makima(name = "Microsoft Teams")
-
-from apollo_base.makima_base import MakimaBase
-
-class YourClass(MakimaBase)
-    super().__init__()
-
-def your_function
-    self.makima(name_contains="| Microsoft Teams")
- ```
 
 ***support query：***
 
