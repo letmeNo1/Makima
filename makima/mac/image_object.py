@@ -1,4 +1,4 @@
-from makima.mac.utils.mouse import MacMouse
+from apollo_makima.mac.utils.mouse import MacMouse
 
 
 class ImageObject(MacMouse):

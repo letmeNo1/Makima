@@ -3,13 +3,13 @@ import re
 
 import time
 
-from makima.helper.stack import Stack
+from apollo_makima.helper.stack import Stack
 
 if platform.system() == "Windows":
-    from makima.windows.image_object import ImageObject
+    from apollo_makima.windows.image_object import ImageObject
 elif platform.system() == "Darwin":
-    from makima.mac.image_object import ImageObject
-from makima.openCV.kmeans_run import kmeans_run
+    from apollo_makima.mac.image_object import ImageObject
+from apollo_makima.openCV.kmeans_run import kmeans_run
 
 
 def __assert_ui_element(element, **query):

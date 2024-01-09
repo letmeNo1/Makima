@@ -1,5 +1,5 @@
-from makima.helper.find_ui_element import find_element_by_image
-from makima.openCV.image_object import ImageObject
+from apollo_makima.helper.find_ui_element import find_element_by_image
+from apollo_makima.openCV.image_object import ImageObject
 
 
 class Init_App_Ref_For_Image:

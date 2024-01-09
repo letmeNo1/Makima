@@ -1,5 +1,5 @@
 import Quartz
-from makima.mac.call_mac_api.KeyCodes import KeyCodes
+from apollo_makima.mac.call_mac_api.KeyCodes import KeyCodes
 
 
 class MacKeyBoard:

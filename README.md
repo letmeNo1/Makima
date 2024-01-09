@@ -147,7 +147,7 @@ Return UIElement's state text, corresponding to LegacyIAccessibleStateProperty
 
 
 * `get_window_state -> str`:  
-Return Current window state, e.g. 0: "standard", 1: "maxiuim", 2: "minimize"
+Return Current window state, e.g. 0: "standard", 1: "maximum", 2: "minimize"
 
 
 * `get_last_ele -> WinUIElement`: 
@@ -302,7 +302,7 @@ Simulates mouse hover events
 
 
 * `double_click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
-Simulates mouse hover events
+Simulate a double mouse click
 
 
 * `right_click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
@@ -310,7 +310,7 @@ Simulates mouse right click events
 
 
 * `drag_to(self,to_x, to_y, duration, x_coordinate, y_coordinate, x_offset, y_offset)`:
-Offset Click. The offset xy is offset based on the current xy axis
+Simulates dragging an element to the specified coordinates
 
 * `input_text(text)`: 
 Simulates input event
@@ -319,7 +319,7 @@ Simulates input event
 Clear input field
 
 
-# Keybord event
+# Keyboard event
 
 ## Windows only
 Supports single or multiple key combinations
@@ -358,7 +358,7 @@ makima_kb.send_keys(makima_kb.codes.KEY_A, makima_kb.codes.Ctrl, makima_kb.mask_
 ```
 
 Notice!
-When there are two or more keys, the mac and window parameters are not the same, so you need to match the mac key combination with the keycode of the mask type. The order in which arguments are passed also affects the actual performance of keypresses
+When there are two or more keys, the Mac and Windows parameters are not the same, and when the operating system is Mac, the Mac key combination needs to be matched with the keycode of the mask type. The order in which arguments are passed also affects the actual performance of keypresses.
 
        
 # Mouse event
@@ -761,34 +761,34 @@ UIElement通过`Init_App_Ref_For_Win`/`Init_App_Ref_For_Mac`返回
 `x_offset`、`y_offset`是可选的。偏移量xy是基于当前xy轴的偏移量
 
 * `click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
-Simulates mouse click events
+模拟鼠标点击事件
 
 
 * `hover(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
-Simulates mouse hover events
+模拟鼠标悬停事件
 
 
 * `double_click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
-Simulates mouse hover events
+模拟鼠标双击
 
 
 * `right_click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
-Simulates mouse right click events
+模拟鼠标右键事件
 
 
 * `drag_to(self,to_x, to_y, duration, x_coordinate, y_coordinate, x_offset, y_offset)`:
-Offset Click. The offset xy is offset based on the current xy axis
+模拟拖动一个元素到指定的坐标
 
 * `input_text(text)`: 
-Simulates input event
+模拟输入事件
 
 * `clear(text)`: 
-Clear input field
+清空输入字段
 
 
-# Keybord event
+# 键盘事件
 
-## Windows only
+## 仅限Windows
 Supports single or multiple key combinations
 ```
 from makima.windows.utils.keyboard import WinKeyboard
@@ -805,8 +805,8 @@ makima_kb.send_keys(makima_kb.codes.KEY_C,makima_kb.codes.KEY_V)
 makima_kb.send_keys(self.makima_kb.codes.ALT,self.makima_kb.codes.CONTROL,self.makima_kb.codes.KEY_A)
 ```
 
-## Mac only
-Supports single or multiple key combinations
+## 仅限Mac
+支持单键或多键组合
 ```
 from makima.mac.utils.keyboard import MacKeyboard
 
@@ -824,14 +824,14 @@ makima_kb.send_keys(makima_kb.codes.KEY_A, makima_kb.codes.Ctrl, makima_kb.mask_
 
 ```
 
-Notice!
-When there are two or more keys, the mac and window parameters are not the same, so you need to match the mac key combination with the keycode of the mask type. The order in which arguments are passed also affects the actual performance of keypresses
+注意!
+当有两个或两个以上的键时，Mac和Windows参数不相同，当操作系统为Mac时，需要将Mac键组合与mask类型的keycode进行匹配。传递参数的顺序也会影响按键的实际表现。
 
        
-# Mouse event
-Most mouse events are contained within the element object operations, so we won't cover them here
+# 鼠标事件
+大多数鼠标事件都包含在元素对象操作中，因此这里不做介绍
 
-## Windows only
+## 仅限Windows
 
 ```
 from makima.windows.utils.keyboard import WinMouse
@@ -845,7 +845,7 @@ makima_mouse.scroll_wheel(x,y,-100)
 makima_mouse.scroll_wheel(x,y,100)
 ```
 
-## Mac only
+## 仅限Mac
 ```
 from makima.mac.utils.keyboard import MacMouse
 
@@ -859,9 +859,9 @@ makima_mouse.scroll_wheel(x,y,100)
 
 ```
 
-# Common
+# 通常接口
 
-## Windows only
+## 仅限 Windows
 
 ```
 from makima.windows.utils.keyboard import WinCommon
@@ -879,18 +879,18 @@ makima_common.find_windows(name=None, **query)
 makima_common.open_app_by_name(name)
 
 ```
-Additional Windows Support `HWND_OBJ`
+Windows额外支持`HWND OBJ`
 
 ```
 teams_obj = makima_common.find_windows(name="Teams", **query)
 
-#get window title
+# 获取窗口标题
 teams_obj.get_window_title
 
-#get window class name
+# 获取窗口类名
 teams_obj.get_window_class_name
 
-#Force the window to appear at the front
+# 强制窗口显示在前面
 teams_obj.focus_window()
 
 """ 
@@ -913,21 +913,21 @@ teams_obj.show_window(number)
 ```
 
 
-## Mac only
+## 仅限Mac
 ```
 from makima.mac.utils.common import MacCommon
 
 makima_common = MacCommon()
 
-# Activate the window so that it appears at the front
+# 激活窗口，让它出现在前面
 makima_common.active_window(name)
 
-# Hide the window
+# 隐藏窗口
 makima_common.hide_window(name)
 
-# Unhide the window
+# 打开窗口
 makima_common.unhide_window(name)
 
-# Determine if the application has started
+# 确定应用程序是否已经启动
 makima_common.is_finished_launching(name)
 ```

@@ -8,9 +8,9 @@ import ApplicationServices as AppServ
 from PyObjCTools import AppHelper
 import HIServices
 
-from makima.helper.find_ui_element import *
-from makima.mac.utils.common import MacCommon
-from makima.mac.utils.mouse import *
+from apollo_makima.helper.find_ui_element import *
+from apollo_makima.mac.utils.common import MacCommon
+from apollo_makima.mac.utils.mouse import *
 
 """
 Library of Apple A11y functions

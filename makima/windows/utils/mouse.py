@@ -3,8 +3,8 @@ import ctypes.wintypes
 import re
 from time import sleep
 
-from makima.windows.call_win_api.i_mouse import IMouse
-from makima.windows.utils.common import WinCommon
+from apollo_makima.windows.call_win_api.i_mouse import IMouse
+from apollo_makima.windows.utils.common import WinCommon
 
 class WinMouse(IMouse,WinCommon):
     _MOUSEEVENTF_MOVE = 0x0001  # mouse move
