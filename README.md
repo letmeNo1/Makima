@@ -14,6 +14,7 @@ Install
 pip install Makima
 
 Getting started
+===============
 
 **For Mac**
 
@@ -473,11 +474,12 @@ makima_common.is_finished_launching(name)
 这是一个基于无障碍api的桌面自动化测试框架。同时，借助开源的Ctype框架，实现了对Mac和Windows系统级API的调用。
 
 安装 
-
 ===============
 
 pip install Makima
 
+版本要求 
+===============
 **对于 Mac**
 
 无
