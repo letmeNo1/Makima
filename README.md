@@ -11,7 +11,7 @@ This is a desktop automated testing framework based on accessibility api. At the
 Install 
 ===============
 
-pip install ApolloMakima
+pip install Makima
 
 Getting started
 
@@ -44,7 +44,7 @@ Init
  
  ***For Mac：***      
 ```
-from apollo_makima.helper.operation_mac import Init_App_Ref_For_Mac
+from makima.helper.operation_mac import Init_App_Ref_For_Mac
 
 makima = Init_App_Ref_For_Mac()    
 teams_ins = makima(name="Microsoft Teams")
@@ -52,7 +52,7 @@ teams_ins = makima(name="Microsoft Teams")
 
  ***For Windows：***
  ```
-from apollo_makima.helper.operation_win import Init_App_Ref_For_Win
+from makima.helper.operation_win import Init_App_Ref_For_Win
 
 makima = Init_App_Ref_For_Win()   
 teams_ins = makima(name = "Microsoft Teams")
@@ -324,7 +324,7 @@ Clear input field
 ## Windows only
 Supports single or multiple key combinations
 ```
-from apollo_makima.windows.utils.keyboard import WinKeyboard
+from makima.windows.utils.keyboard import WinKeyboard
 
 makima_kb = WinKeyboard()
 
@@ -341,7 +341,7 @@ makima_kb.send_keys(self.makima_kb.codes.ALT,self.makima_kb.codes.CONTROL,self.m
 ## Mac only
 Supports single or multiple key combinations
 ```
-from apollo_makima.mac.utils.keyboard import MacKeyboard
+from makima.mac.utils.keyboard import MacKeyboard
 
 makima_kb = MacKeyboard()
 
@@ -367,7 +367,7 @@ Most mouse events are contained within the element object operations, so we won'
 ## Windows only
 
 ```
-from apollo_makima.windows.utils.keyboard import WinMouse
+from makima.windows.utils.keyboard import WinMouse
 
 makima_mouse = WinMouse()
 
@@ -380,7 +380,7 @@ makima_mouse.scroll_wheel(x,y,100)
 
 ## Mac only
 ```
-from apollo_makima.mac.utils.keyboard import MacMouse
+from makima.mac.utils.keyboard import MacMouse
 
 makima_mouse = MacMouse()
 
@@ -397,7 +397,7 @@ makima_mouse.scroll_wheel(x,y,100)
 ## Windows only
 
 ```
-from apollo_makima.windows.utils.keyboard import WinCommon
+from makima.windows.utils.keyboard import WinCommon
 
 makima_common = WinCommon()
 
@@ -448,7 +448,7 @@ teams_obj.show_window(number)
 
 ## Mac only
 ```
-from apollo_makima.mac.utils.common import MacCommon
+from makima.mac.utils.common import MacCommon
 
 makima_common = MacCommon()
 

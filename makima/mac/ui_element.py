@@ -258,6 +258,8 @@ class MacUIElement(object):
             return self.__get_attribute(AppServ.kAXRoleAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorInvalidUIElement:
+            return None
         except ErrorCommon:
             return None
 
@@ -281,6 +283,8 @@ class MacUIElement(object):
             return self.__get_attribute(AppServ.kAXPositionAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorInvalidUIElement:
+            return None
         except ErrorCommon:
             return None
 
@@ -289,6 +293,8 @@ class MacUIElement(object):
         try:
             return self.__get_attribute(AppServ.kAXIdentifierAttribute)
         except ErrorUnsupported:
+            return None
+        except ErrorInvalidUIElement:
             return None
         except ErrorCommon:
             return None
@@ -302,6 +308,8 @@ class MacUIElement(object):
             return self.__get_attribute(AppServ.kAXTitleAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorInvalidUIElement:
+            return None
         except ErrorCommon:
             return None
 
@@ -311,14 +319,29 @@ class MacUIElement(object):
             return self.__get_attribute(AppServ.kAXValueAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorInvalidUIElement:
+            return None
         except ErrorCommon:
             return None
 
     @property
     def get_label(self):
         try:
-            return self.__get_attribute(AppServ.kAXLabelValueAttribute)
+            return self.__get_attribute(AppServ.kAXDescriptionAttribute)
         except ErrorUnsupported:
+            return None
+        except ErrorInvalidUIElement:
+            return None
+        except ErrorCommon:
+            return None
+
+    @property
+    def get_description(self):
+        try:
+            return self.__get_attribute(AppServ.kAXDescriptionAttribute)
+        except ErrorUnsupported:
+            return None
+        except ErrorInvalidUIElement:
             return None
         except ErrorCommon:
             return None
@@ -328,6 +351,8 @@ class MacUIElement(object):
         try:
             return self.__get_attribute(AppServ.kAXRoleDescriptionAttribute)
         except ErrorUnsupported:
+            return None
+        except ErrorInvalidUIElement:
             return None
         except ErrorCommon:
             return None
@@ -341,6 +366,8 @@ class MacUIElement(object):
             return self.__get_attribute(AppServ.kAXHelpAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorInvalidUIElement:
+            return None
         except ErrorCommon:
             return None
 
@@ -350,6 +377,8 @@ class MacUIElement(object):
             return self.__get_attribute(AppServ.kAXSubroleAttribute)
         except ErrorUnsupported:
             return None
+        except ErrorInvalidUIElement:
+            return None
         except ErrorCommon:
             return None
 
@@ -358,6 +387,8 @@ class MacUIElement(object):
         try:
             return bool(self.__get_attribute(AppServ.kAXSelectedAttribute))
         except ErrorUnsupported:
+            return None
+        except ErrorInvalidUIElement:
             return None
         except ErrorCommon:
             return None
@@ -392,7 +423,7 @@ class MacUIElement(object):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.left_mouse_single_click_event(x, y)
 
-    def hover(self,x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
+    def hover(self, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.left_mouse_move_event(x, y)
 
@@ -404,13 +435,13 @@ class MacUIElement(object):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.right_mouse_single_click_event(x, y)
 
-    def drag_to(self,to_x, to_y, duration, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
+    def drag_to(self, to_x, to_y, duration, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         left_mouse_dragged_event(x, y, to_x, to_y, duration)
 
     def input_text(self, text):
         x, y = self.get_center_coordinates
-        self._common.input_text(x, y, text)
+        self._common.input_text(text, x, y)
 
     def clear(self):
         x, y = self.get_center_coordinates

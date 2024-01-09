@@ -87,19 +87,27 @@ def wait_function_by_image(timeout, func, path, distance, algorithms_name):
 def __traversal_node(timeout, all_node, reverse, is_muti, **query):
     result = []
     time_started_sec = time.time()
+    ui_tree = []
     while all_node.is_not_empty() and time.time() < time_started_sec + timeout / 2:
         element = all_node.pop()
+        ui_tree.append(element)
         elements_list = element.get_acc_children_elements()
         rst = __assert_ui_element(element, **query)
 
         if rst:
-            element._set_last_ele(None if all_node.size() == 0 else all_node.pop())
-            element._set_next_ele(next_element)
+            next_ele = all_node.pop()
+            all_node.push(next_ele)
+            if reverse:
+                element._set_last_ele(ui_tree[ui_tree.index(element) - 1])
+                element._set_next_ele(None if all_node.size() == 0 else next_ele)
+            else:
+                element._set_last_ele(None if all_node.size() == 0 else next_ele)
+                element._set_next_ele(ui_tree[ui_tree.index(element) - 1])
             result.append(element)
+
             if not is_muti:
                 break
 
-        next_element = element
         if len(elements_list) > 0:
             if reverse:
                 elements_list.reverse()

@@ -382,7 +382,7 @@ class WinUIElement(object):
 
     def wheel_to(self, distans, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
-        self._mouse.wheel(x, y, distans)
+        self._mouse.scroll_wheel(x, y, distans)
 
     def input_text(self, text):
         self.click()

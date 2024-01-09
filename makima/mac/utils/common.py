@@ -1,19 +1,22 @@
 import Cocoa
-import Quartz
+
+
 from makima.mac.utils.keyboard import MacKeyBoard
 from makima.mac.utils.mouse import MacMouse
 
-from makima.mac.call_mac_api.call_app_kit import CallAppKit
+from apollo_makima.mac.call_mac_api.call_app_kit import CallAppKit
 
 
 class MacCommon(CallAppKit):
-    def input_text(self, x, y, text):
+    def input_text(self, text, x=None, y=None):
         self.set_paste_board(text)
-        MacMouse().left_mouse_single_click_event(x, y)
+        if x is not None:
+            MacMouse().left_mouse_single_click_event(x, y)
         MacKeyBoard().send_keys(MacKeyBoard().codes.KEY_V, MacKeyBoard().mask_codes.COMMAND)
 
-    def clear(self, x, y):
-        MacMouse().left_mouse_single_click_event(x, y)
+    def clear(self, x=None, y=None):
+        if x is not None:
+            MacMouse().left_mouse_single_click_event(x, y)
         MacKeyBoard().send_keys(MacKeyBoard().codes.KEY_A, MacKeyBoard().mask_codes.COMMAND)
         MacKeyBoard().send_keys(MacKeyBoard().codes.DELETE)
 
