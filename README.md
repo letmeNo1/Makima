@@ -470,9 +470,9 @@ makima_common.is_finished_launching(name)
 背景
 ==========
 
-This is a desktop automated testing framework based on accessibility api. At the same time, with the help of the open source framework of Ctype, the purpose of calling the Mac and Windows system-level API is achieved.
-
+这是一个基于无障碍api的桌面自动化测试框架。同时，借助开源的Ctype框架，实现了对Mac和Windows系统级API的调用。
 安装 
+
 ===============
 
 pip install Makima
@@ -489,16 +489,15 @@ pip install Makima
 ===============
 **对于 Mac**
 
-Accessibility Inspector：Xcode -> Open Developer Tools
+Accessibility Inspector：Xcode -> 打开 Developer Tools
 
-Using `Accessibility Inspector` can provide a quick way to find these attributes.
+使用`Accessibility Inspector`可以提供一种快速查找这些属性的方法。
 
 **对于 Windows**
 
-download  [inspect.exe](https://github.com/letmeNo1/Aki-Tools/blob/main/inspect.exe)
+下载  [inspect.exe](https://github.com/letmeNo1/Aki-Tools/blob/main/inspect.exe)
 
-Using `inspect.exe` can provide a quick way to find these attributes.
-
+使用`inspect.exe`可以提供一种快速查找这些属性的方法。
 
 初始化
 ==========
