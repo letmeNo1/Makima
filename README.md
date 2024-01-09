@@ -22,7 +22,7 @@ pass
 **For Windows**
 Requires system version >= Windows 7
 
-Applicaion element locate tool
+Application element locate tool
 ===============
 **For Mac**
 
@@ -66,7 +66,7 @@ Both mac and windows support,  `name =` is used as the search criterion by defau
 ```
 name = "Calendar | Microsoft Teams"
 ```
-`name_contains=` partial matching and   
+`name_contains=` partial matching 
 ```
 name_contains = "Calendar | Microsoft Teams"
 ```
@@ -165,7 +165,7 @@ Return tuple (x, y) if a clickable point was retrieved, or None otherwise
 
 
 * `get_acc_children_elements() -> list[WinUIElement]`:
-Return chilren elements
+Return children elements
 
 
 * `get_acc_location() -> tuple (left, top, right, bottom)`:  
@@ -212,7 +212,7 @@ Return UIElement's help
 Return UIElement's sub role
 
 
-* `get_selected -> boo `: 
+* `get_selected -> bool `: 
 Return UIElement if selected
 
 **Attribute@non-property:**
@@ -233,12 +233,12 @@ Return the PID of the AXUIElement
 Perform the specified action on the UIElement object
 
 
-* `get_element_at_position(x,y)`:
+* `get_element_at_position(x,y) ->MacUIElement`:
 Gets the UIElement object at the specified coordinates
 
 
 * `get_acc_children_elements()`:
-Return chilren elements
+Return children elements
 
 
 * `get_position()`:
@@ -246,7 +246,7 @@ Gets the current element coordinates
 
 
 * `get_size()`:
-Gets the current element width, hight
+Gets the current element width, height
 
 
 * `get_parent() -> MacUIElement`:  
@@ -261,7 +261,7 @@ Return center coordinates of UIElement object
 
 Find method
 
-For all find metod, `**query` can use all attribute from `attribute@property`, and support `contains` and `matches`
+For all find method, `**query` can use all attribute from `attribute@property`, and support `contains` and `matches`
 e.g
   ```
   ele(acc_name = "Microsoft Teams")
@@ -288,10 +288,477 @@ Find element by scroll, The default timeout period for searching elements is 5s�
 
 Action Method
 
-For all action metod  
+For all action method  
 `x_coordinate`, `y_coordinate` 
 are optional and defaults to None, which means use the coordinate of the current element.  
 `x_offset`, `y_offset` are optional. The offset xy is offset based on the current xy axis
+
+* `click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
+Simulates mouse click events
+
+
+* `hover(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
+Simulates mouse hover events
+
+
+* `double_click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
+Simulates mouse hover events
+
+
+* `right_click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
+Simulates mouse right click events
+
+
+* `drag_to(self,to_x, to_y, duration, x_coordinate, y_coordinate, x_offset, y_offset)`:
+Offset Click. The offset xy is offset based on the current xy axis
+
+* `input_text(text)`: 
+Simulates input event
+
+* `clear(text)`: 
+Clear input field
+
+
+# Keybord event
+
+## Windows only
+Supports single or multiple key combinations
+```
+from makima.windows.utils.keyboard import WinKeyboard
+
+makima_kb = WinKeyboard()
+
+# Simulate the Enter key
+makima_kb.send_keys(makima_kb.codes.RETURN)
+
+# Simulating copy and paste
+makima_kb.send_keys(makima_kb.codes.KEY_C,makima_kb.codes.KEY_V)
+
+# Simulating ctrl + alt + A
+makima_kb.send_keys(self.makima_kb.codes.ALT,self.makima_kb.codes.CONTROL,self.makima_kb.codes.KEY_A)
+```
+
+## Mac only
+Supports single or multiple key combinations
+```
+from makima.mac.utils.keyboard import MacKeyboard
+
+makima_kb = MacKeyboard()
+
+# Simulate the Enter key
+makima_kb.send_keys(makima_kb.codes.RETURN)
+
+# Simulating copy and paste
+makima_kb.send_keys(makima_kb.codes.KEY_V, makima_kb.mask_codes.COMMAND)
+
+
+# Simulating ctrl + command + A
+makima_kb.send_keys(makima_kb.codes.KEY_A, makima_kb.codes.Ctrl, makima_kb.mask_codes.COMMAND)
+
+```
+
+Notice!
+When there are two or more keys, the mac and window parameters are not the same, so you need to match the mac key combination with the keycode of the mask type. The order in which arguments are passed also affects the actual performance of keypresses
+
+       
+# Mouse event
+Most mouse events are contained within the element object operations, so we won't cover them here
+
+## Windows only
+
+```
+from makima.windows.utils.keyboard import WinMouse
+
+makima_mouse = WinMouse()
+
+# The wheel moves up 100, x,y means start position 
+makima_mouse.scroll_wheel(x,y,-100)
+
+# The wheel moves down 100, x,y means start position 
+makima_mouse.scroll_wheel(x,y,100)
+```
+
+## Mac only
+```
+from makima.mac.utils.keyboard import MacMouse
+
+makima_mouse = MacMouse()
+
+# The wheel moves up 100, x,y means start position 
+makima_mouse.scroll_wheel(x,y,-100)
+
+# The wheel moves down 100, x,y means start position 
+makima_mouse.scroll_wheel(x,y,100)
+
+```
+
+# Common
+
+## Windows only
+
+```
+from makima.windows.utils.keyboard import WinCommon
+
+makima_common = WinCommon()
+
+# Waiting for the window to appear,The default timeout is 5 seconds, The rules for passing parameters are the same as
+`Init_App_Ref_For_Mac`
+makima_common.find_window_by_wait(name=None, timeout=5, **kwargs)
+
+# Finds the window and returns a list of `HWND_OBJ`
+makima_common.find_windows(name=None, **query)
+
+# Open the application from the start menu
+makima_common.open_app_by_name(name)
+
+```
+Additional Windows Support `HWND_OBJ`
+
+```
+teams_obj = makima_common.find_windows(name="Teams", **query)
+
+#get window title
+teams_obj.get_window_title
+
+#get window class name
+teams_obj.get_window_class_name
+
+#Force the window to appear at the front
+teams_obj.focus_window()
+
+""" 
+Maxinum or Mininum windows
+SW_HIDE = 0
+SW_SHOWNORMAL = 1
+SW_SHOWMINIMIZED = 2
+SW_SHOWMAXIMIZED = 3
+SW_SHOWNOACTIVATE = 4
+SW_SHOW = 5
+SW_MINIMIZE = 6
+SW_SHOWMINNOACTIVE = 7
+SW_SHOWNA = 8
+SW_RESTORE = 9
+SW_SHOWDEFAULT = 10
+""" 
+teams_obj.show_window(number)
+
+
+```
+
+
+## Mac only
+```
+from makima.mac.utils.common import MacCommon
+
+makima_common = MacCommon()
+
+# Activate the window so that it appears at the front
+makima_common.active_window(name)
+
+# Hide the window
+makima_common.hide_window(name)
+
+# Unhide the window
+makima_common.unhide_window(name)
+
+# Determine if the application has started
+makima_common.is_finished_launching(name)
+```
+
+
+
+背景
+==========
+
+This is a desktop automated testing framework based on accessibility api. At the same time, with the help of the open source framework of Ctype, the purpose of calling the Mac and Windows system-level API is achieved.
+
+安装 
+===============
+
+pip install Makima
+
+**对于 Mac**
+
+无
+
+**对于 Windows**
+
+需要系统版本>= Windows 7
+
+应用程序元素定位工具
+===============
+**对于 Mac**
+
+Accessibility Inspector：Xcode -> Open Developer Tools
+
+Using `Accessibility Inspector` can provide a quick way to find these attributes.
+
+**对于 Windows**
+
+download  [inspect.exe](https://github.com/letmeNo1/Aki-Tools/blob/main/inspect.exe)
+
+Using `inspect.exe` can provide a quick way to find these attributes.
+
+
+初始化
+==========
+
+### 通过应用名称/窗口名称初始化UIElementRef
+ 
+ ***对于 Mac：***      
+```
+from makima.helper.operation_mac import Init_App_Ref_For_Mac
+
+makima = Init_App_Ref_For_Mac()    
+teams_ins = makima(name="Microsoft Teams")
+```
+
+ ***对于 Windows：***
+ ```
+from makima.helper.operation_win import Init_App_Ref_For_Win
+
+makima = Init_App_Ref_For_Win()   
+teams_ins = makima(name = "Microsoft Teams")
+```
+
+***支持的查找方式：***
+
+Windows 和Mac 通用，当不指定查询类型时，默认使用' name = '作为搜索条件。
+
+`name =` 完全匹配
+```
+name = "Calendar | Microsoft Teams"
+```
+`name_contains=` 模糊匹配
+```
+name_contains = "Calendar | Microsoft Teams"
+```
+`name_matches` 正则表达式匹配
+```
+name_matches = "^Automation.*Teams$"
+```
+
+*对于 Windows*
+
+额外支持`class_name`作为额外的查询条件
+
+e.g. `teams_ins = makima(name_contains="| Microsoft Teams",class_name="")`
+
+or pass a handle object directly
+e.g. 
+```
+teams_hwnd = makima_common.find_windos(name="Microsoft Teams")[0]
+teams_ins = makima(hwnd=teams_hwnd)
+```
+
+*对于 Mac*
+
+额外支持`pid`作为查询条件
+
+e.g. `self.makima(pid="1234")`
+
+
+# UIElementRef
+
+UIElement通过`Init_App_Ref_For_Win`/`Init_App_Ref_For_Mac`返回
+
+## Windows支持的属性:
+
+**Attribute@property:**
+
+* `get_current_hwnd -> str`:  
+返回当前元素的相关窗口的句柄
+
+
+* `get_toggle_state -> str`:  
+返回当前元素的开关状态(前提是元素是开关类型的元素)。.
+
+
+* `get_acc_value -> str`:   
+返回当前元素的 Value, 对应 LegacyIAccessible.Value
+
+
+* `get_acc_keyboardshortcut -> str`:  
+返回当前元素的 keyboardshortcut, 对应 LegacyIAccessible.KeyboardShortcutProperty
+
+
+* `get_automation_id -> str`: 返回当前元素的 automationid,
+
+
+* `get_class_name -> str`:  返回当前元素的 class name
+
+
+* `get_control_type_name -> str`: 返回当前元素的 control type name
+
+
+* `get_is_enabled -> bool`: 返回当前元素的 enabled status
+
+
+* `get_acc_name -> str`: 返回当前元素的 accessible name
+
+
+* `get_default_action -> str`:  
+返回当前元素的 default_action
+
+
+* `get_description -> str`:   
+返回当前元素的 accessible description, 对应 LegacyIAccessibleDescriptionProperty
+
+
+* `get_acc_role -> str`:  
+返回当前元素的 accessible role, 对应 LegacyIAccessibleRoleProperty
+
+
+* `get_state -> str`:   
+返回当前元素的 state text, 对应 LegacyIAccessibleStateProperty
+
+
+* `get_window_state -> str`:  
+返回当前窗口状态，例如 0:"standard"， 1: " maximuim "， 2: "minimize"
+
+
+* `get_last_ele -> WinUIElement`: 
+返回上一个元素
+
+* `get_next_ele -> WinUIElement`: 
+返回下一个元素
+
+
+**Attribute@non-property:**
+
+* `get_clickable_point() -> tuple(x,y)`:  
+如果检索到了可单击的坐标，则返回元组(x, y)，否则不返回
+
+
+* `get_acc_children_elements() -> list[WinUIElement]`:
+返回子级元素
+
+
+* `get_acc_location() -> tuple (left, top, right, bottom)`: 
+返回完全包围UIElement的矩形的坐标。返回元组(left, top, right, bottom)
+
+
+* `get_parent() -> WinUIElement`:返回父级元素
+
+## Attribute Mac only:
+
+**Attribute@property:**
+
+* `get_role -> str`:
+返回当前元素的 role value
+
+
+* `get_identifier: -> str`:
+返回当前元素的 identifier
+
+
+* `get_title: -> str`:
+返回当前元素的 title
+
+
+
+* `get_value -> str`: 
+返回当前元素的 value
+
+
+* `get_label -> str`: 
+返回当前元素的 label
+
+
+* `get_role_description -> str`: 
+返回当前元素的 role description
+
+
+* `get_help -> str`: 
+返回当前元素的 help
+
+
+* `get_sub_role -> str `: 
+返回当前元素的 sub role
+
+
+* `get_selected -> bool`: 
+返回当前元素是否被选中
+
+**Attribute@non-property:**
+
+* `get_attributes() -> str`:
+返回当前元素的所有属性
+
+
+* `get_actions() -> list`:
+返回当前元素上可用的操作列表
+
+
+* `get_pid()`:
+返回当前元素的pid
+
+
+* `perform_action(action)`:
+在UIElement对象上执行指定的操作
+
+
+* `get_element_at_position(x,y) ->MacUIElement`:
+获取指定坐标处的UIElement对象
+
+
+* `get_acc_children_elements()`:
+返回子元素
+
+
+* `get_position()`:
+获取当前元素坐标
+
+
+* `get_size()`:
+获取当前元素的宽度、高度
+
+
+* `get_parent() -> MacUIElement`:  
+返回父元素
+
+
+* `get_center_coordinates()`
+返回UIElement对象的中心坐标
+
+
+## 适用于Windows和Mac操作系统
+
+**方法:**
+
+查找方法
+
+对于所有find方法，` query`可以使用`attribute@property`中的所有属性，并支持`contains`和`matches`
+如
+  ```
+  ele(acc_name = "Microsoft Teams")
+  ele(acc_name = "Microsoft Teams",acc_role = "input")
+  ele(acc_name_contains = "teams",acc_role = "input")
+  ele(acc_name_matches = "*.teams*.")
+  ```
+
+* `ele(timeout =5, **query) -> WinUIElement`: 
+查找元素，搜索元素的默认超时时间是5秒, timeout将抛出错误。返回一个单元素对象
+
+
+* `eles(timeout =5, **query) -> List[WinUIElement]`:  
+查找元素，搜索元素的默认超时时间是5秒, timeout将抛出错误。返回多个元素对象
+
+
+* `check_element_exist(timeout =5, **query) -> bool`: 
+检查元素是否存在，搜索元素的默认超时时间是5秒, timeout将抛出错误。返回`True`或`False`
+
+
+* `scroll_to_find_element(scroll_time=15, timeout =5, **query) -> WinUIElement`:  
+通过滚动查找元素，搜索元素的默认超时时间是5秒, timeout将抛出错误。
+
+
+操作方法
+
+对于所有操作方法
+`x_coordinate`、`y_coordinate`
+是可选的，默认值为None，这表示使用当前元素的坐标。
+`x_offset`、`y_offset`是可选的。偏移量xy是基于当前xy轴的偏移量
 
 * `click(x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None)`: 
 Simulates mouse click events
