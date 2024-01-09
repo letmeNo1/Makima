@@ -21,6 +21,7 @@ Getting started
 pass
 
 **For Windows**
+
 Requires system version >= Windows 7
 
 Application element locate tool
