@@ -1,6 +1,6 @@
 import re
 
-from apollo_makima.windows.ui_element import WinUIElement, _IUIAutomation
+from makima.windows.ui_element import WinUIElement, _IUIAutomation
 
 
 

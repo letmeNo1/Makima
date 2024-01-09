@@ -1,10 +1,10 @@
 import Cocoa
 
 
-from apollo_makima.mac.utils.keyboard import MacKeyBoard
-from apollo_makima.mac.utils.mouse import MacMouse
+from makima.mac.utils.keyboard import MacKeyBoard
+from makima.mac.utils.mouse import MacMouse
 
-from apollo_makima.mac.call_mac_api.call_app_kit import CallAppKit
+from makima.mac.call_mac_api.call_app_kit import CallAppKit
 
 
 class MacCommon(CallAppKit):

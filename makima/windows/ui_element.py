@@ -4,16 +4,16 @@ from typing import List
 
 import _ctypes
 import comtypes.client
-from apollo_makima.windows.static_variable import state_dict, _control_type, property_id, _tree_scope
+from makima.windows.static_variable import state_dict, _control_type, property_id, _tree_scope
 
-from apollo_makima.windows.utils.mouse import WinMouse
-from apollo_makima.windows.utils.keyboard import WinKeyboard
+from makima.windows.utils.mouse import WinMouse
+from makima.windows.utils.keyboard import WinKeyboard
 
 import comtypes.client
 
-from apollo_makima.helper.find_ui_element import *
+from makima.helper.find_ui_element import *
 
-from apollo_makima.windows.static_variable import role_dict
+from makima.windows.static_variable import role_dict
 
 CO_E_OBJNOTCONNECTED = -2147220995
 UIAutomationCore = comtypes.client.GetModule("UIAutomationCore.dll")

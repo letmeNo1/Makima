@@ -1,7 +1,7 @@
 import ctypes
 from time import sleep
 
-from apollo_makima.windows.call_win_api.i_keyboard import IKeyboard, Key
+from makima.windows.call_win_api.i_keyboard import IKeyboard, Key
 
 send_input = ctypes.windll.user32.SendInput
 pointer_unsigned_long = ctypes.POINTER(ctypes.c_ulong)

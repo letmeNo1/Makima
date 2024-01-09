@@ -5,9 +5,9 @@ from ctypes import *
 from ctypes import wintypes
 from ctypes.wintypes import HWND, CHAR, LPSTR
 
-from apollo_makima.windows.utils.keyboard import WinKeyboard
+from makima.windows.utils.keyboard import WinKeyboard
 
-from apollo_makima.windows.utils.hwnd import HWND_OBJ
+from makima.windows.utils.hwnd import HWND_OBJ
 from typing import List
 
 

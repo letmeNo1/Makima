@@ -1,5 +1,5 @@
-from apollo_makima.mac.call_mac_api.call_app_kit import CallAppKit
-from apollo_makima.mac.ui_element import MacUIElement
+from makima.mac.call_mac_api.call_app_kit import CallAppKit
+from makima.mac.ui_element import MacUIElement
 import ApplicationServices as AppServ
 
 
