@@ -144,6 +144,10 @@ Return UIElement's accessible description, corresponding to LegacyIAccessibleDes
 Return UIElement's accessible role, corresponding to LegacyIAccessibleRoleProperty
 
 
+* `get_help -> str`:   
+Return UIElement's help, corresponding to LegacyIAccessibleHelpProperty
+
+
 * `get_state -> str`:   
 Return UIElement's state text, corresponding to LegacyIAccessibleStateProperty
 
@@ -583,6 +587,10 @@ UIElement通过`Init_App_Ref_For_Win`/`Init_App_Ref_For_Mac`返回
 
 * `get_acc_keyboardshortcut -> str`:  
 返回当前元素的 keyboardshortcut, 对应 LegacyIAccessible.KeyboardShortcutProperty
+
+
+* `get_help -> str`:   
+返回当前元素的 help, 对应 LegacyIAccessible.LegacyIAccessibleHelpProperty
 
 
 * `get_automation_id -> str`: 返回当前元素的 automationid,

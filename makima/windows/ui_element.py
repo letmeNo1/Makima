@@ -123,6 +123,8 @@ class WinUIElement(object):
 
     ControlType = get_control_type
 
+
+
     @property
     def get_control_type_name(self):
         """Retrieves the name of the control type of the element.
@@ -197,6 +199,11 @@ class WinUIElement(object):
     @property
     def get_state(self):
         return self.__get_state_text(self.__get_iaccessible_property(property_id["LegacyIAccessibleStateProperty"]))
+
+    @property
+    def get_help(self):
+        return self.__get_iaccessible_property(property_id["LegacyIAccessibleHelpProperty"])
+
 
     @property
     def get_window_state(self):
@@ -382,7 +389,7 @@ class WinUIElement(object):
 
     def wheel_to(self, distans, x_coordinate=None, y_coordinate=None, x_offset=None, y_offset=None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
-        self._mouse.scroll_wheel(x, y, distans)
+        self._mouse.wheel(x, y, distans)
 
     def input_text(self, text):
         self.click()

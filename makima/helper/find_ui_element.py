@@ -4,6 +4,7 @@ import re
 import time
 
 from makima.helper.stack import Stack
+from makima.helper.queue import Queue
 
 if platform.system() == "Windows":
     from makima.windows.image_object import ImageObject
@@ -31,12 +32,8 @@ def wait_function(timeout, func, root, **query):
     time_started_sec = time.time()
     query_string = list(query.values())[0]
     query_method = list(query.keys())[0]
-    reverse = True
-    end_with_timeout = False
     while time.time() < time_started_sec + timeout:
-        if end_with_timeout:
-            reverse = False
-        result, end_with_timeout = func(timeout, root, reverse, **query)
+        result, end_with_timeout = func(timeout, root, **query)
         if result is not None:
             finish_time = time.time() - time_started_sec
             return result
@@ -46,13 +43,9 @@ def wait_function(timeout, func, root, **query):
 
 def wait_any(timeout, func, root, querylist):
     time_started_sec = time.time()
-    reverse = True
-    end_with_timeout = False
     while time.time() < time_started_sec + timeout:
-        if end_with_timeout:
-            reverse = False
         for query in querylist:
-            result, end_with_timeout = func(timeout, root, reverse, **query)
+            result, end_with_timeout = func(timeout, root, **query)
             if result is not None:
                 return result
     error = "Can't find element/elements"
@@ -61,13 +54,9 @@ def wait_any(timeout, func, root, querylist):
 
 def wait_exist(timeout, func, root, **query):
     rst = False
-    reverse = True
-    end_with_timeout = False
     time_started_sec = time.time()
     while time.time() < time_started_sec + timeout:
-        if end_with_timeout:
-            reverse = False
-        result, end_with_timeout = func(timeout, root, reverse, **query)
+        result, end_with_timeout = func(timeout, root, **query)
         if result is not None:
             return True
     return rst
@@ -84,7 +73,10 @@ def wait_function_by_image(timeout, func, path, distance, algorithms_name):
     raise TimeoutError(error)
 
 
-def __traversal_node(timeout, all_node, reverse, is_muti, **query):
+import time
+
+
+def __traversal_node(timeout, all_node, is_muti, **query):
     result = []
     time_started_sec = time.time()
     ui_tree = []
@@ -95,48 +87,35 @@ def __traversal_node(timeout, all_node, reverse, is_muti, **query):
         rst = __assert_ui_element(element, **query)
 
         if rst:
-            next_ele = all_node.pop()
-            all_node.push(next_ele)
-            if reverse:
-                element._set_last_ele(ui_tree[ui_tree.index(element) - 1])
-                element._set_next_ele(None if all_node.size() == 0 else next_ele)
-            else:
-                element._set_last_ele(None if all_node.size() == 0 else next_ele)
-                element._set_next_ele(ui_tree[ui_tree.index(element) - 1])
+            next_ele = all_node.peek() if all_node.is_not_empty() else None
+            element._set_last_ele(ui_tree[ui_tree.index(element) - 1] if ui_tree.index(element) > 0 else None)
+            element._set_next_ele(next_ele)
             result.append(element)
 
             if not is_muti:
                 break
-
-        if len(elements_list) > 0:
-            if reverse:
-                elements_list.reverse()
+        if elements_list is not None:
             for child_element in elements_list:
                 all_node.push(child_element)
-    '''
-    End_with_timeout indicates that because the timeout 
-    has expired and not because the list loop has finished, 
-    an infinite loop may occur and the outer layer should 
-    try to search in reverse order
-    '''
-    end_with_timeout = all_node.size() > 0
+
+    end_with_timeout = all_node.is_not_empty()
     if not is_muti:
-        return result[0] if len(result) > 0 else None, end_with_timeout
+        return result[0] if result else None, end_with_timeout
     else:
         return result, end_with_timeout
 
 
-def find_element_by_query(timeout, root, reverse, **query):
-    all_node = Stack()
+def find_element_by_query(timeout, root, **query):
+    all_node = Queue()
     all_node.push(root)
-    result, end_with_timeout = __traversal_node(timeout, all_node, reverse, False, **query)
-    return result, end_with_timeout
+    result = __traversal_node(timeout, all_node, False, **query)
+    return result
 
 
-def find_elements_by_query(timeout, root, reverse, **query):
-    all_node = Stack()
+def find_elements_by_query(timeout, root, **query):
+    all_node = Queue()
     all_node.push(root)
-    result, end_with_timeout = __traversal_node(timeout, all_node, reverse, True, **query)
+    result, end_with_timeout = __traversal_node(timeout, all_node, True, **query)
     return result, end_with_timeout
 
 
