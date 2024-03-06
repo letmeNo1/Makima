@@ -1,8 +1,6 @@
 import platform
 import re
 
-import time
-
 from makima.helper.stack import Stack
 from makima.helper.queue import Queue
 
@@ -33,7 +31,7 @@ def wait_function(timeout, func, root, **query):
     query_string = list(query.values())[0]
     query_method = list(query.keys())[0]
     while time.time() < time_started_sec + timeout:
-        result, end_with_timeout = func(timeout, root, **query)
+        result = func(timeout, root, **query)
         if result is not None:
             finish_time = time.time() - time_started_sec
             return result
@@ -45,7 +43,7 @@ def wait_any(timeout, func, root, querylist):
     time_started_sec = time.time()
     while time.time() < time_started_sec + timeout:
         for query in querylist:
-            result, end_with_timeout = func(timeout, root, **query)
+            result = func(timeout, root, **query)
             if result is not None:
                 return result
     error = "Can't find element/elements"
@@ -56,7 +54,7 @@ def wait_exist(timeout, func, root, **query):
     rst = False
     time_started_sec = time.time()
     while time.time() < time_started_sec + timeout:
-        result, end_with_timeout = func(timeout, root, **query)
+        result = func(timeout, root, **query)
         if result is not None:
             return True
     return rst
@@ -67,7 +65,6 @@ def wait_function_by_image(timeout, func, path, distance, algorithms_name):
     while time.time() < time_started_sec + timeout:
         result = func(path, distance, algorithms_name)
         if result is not None:
-            finish_time = time.time() - time_started_sec
             return result
     error = "Can't find element/elements in %s s by image" % timeout
     raise TimeoutError(error)
@@ -80,7 +77,14 @@ def __traversal_node(timeout, all_node, is_muti, **query):
     result = []
     time_started_sec = time.time()
     ui_tree = []
-    while all_node.is_not_empty() and time.time() < time_started_sec + timeout / 2:
+    time_end = time_started_sec+ timeout/2
+    if is_muti:
+        condition = False
+    else:
+        condition = time.time() < time_end
+    while all_node.size() > 0 or condition:
+        if all_node.size() == 0:
+            return None
         element = all_node.pop()
         ui_tree.append(element)
         elements_list = element.get_acc_children_elements()
@@ -97,12 +101,10 @@ def __traversal_node(timeout, all_node, is_muti, **query):
         if elements_list is not None:
             for child_element in elements_list:
                 all_node.push(child_element)
-
-    end_with_timeout = all_node.is_not_empty()
     if not is_muti:
-        return result[0] if result else None, end_with_timeout
+        return result[0] if result else None
     else:
-        return result, end_with_timeout
+        return result
 
 
 def find_element_by_query(timeout, root, **query):
@@ -115,8 +117,8 @@ def find_element_by_query(timeout, root, **query):
 def find_elements_by_query(timeout, root, **query):
     all_node = Queue()
     all_node.push(root)
-    result, end_with_timeout = __traversal_node(timeout, all_node, True, **query)
-    return result, end_with_timeout
+    result = __traversal_node(timeout, all_node, True, **query)
+    return result
 
 
 def find_element_by_image(path, distance, algorithms_name):

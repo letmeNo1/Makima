@@ -4,15 +4,15 @@ from ctypes.wintypes import HWND, CHAR, LPSTR
 
 
 class HWND_OBJ:
-    def __init__(self, hwnd_id):
-        self.hwnd_id = hwnd_id
+    def __init__(self, hwnd):
+        self.hwnd = hwnd
 
     @property
     def get_window_title(self):
         """Get native window title."""
-        cb = windll.user32.GetWindowTextLengthW(self.hwnd_id) + 1
+        cb = windll.user32.GetWindowTextLengthW(self.hwnd) + 1
         title = create_unicode_buffer(cb)
-        windll.user32.GetWindowTextW(self.hwnd_id, title, cb)
+        windll.user32.GetWindowTextW(self.hwnd, title, cb)
         return title.value
 
     @property
@@ -25,7 +25,7 @@ class HWND_OBJ:
         dwCharSize = sizeof(CHAR)
         while 1:
             lpClassName = create_string_buffer(nMaxCount)
-            nCount = _GetClassNameA(self.hwnd_id, lpClassName, nMaxCount)
+            nCount = _GetClassNameA(self.hwnd, lpClassName, nMaxCount)
             if nCount == 0:
                 raise WinError()
             if nCount < nMaxCount - dwCharSize:
@@ -36,9 +36,9 @@ class HWND_OBJ:
     def focus_window(self):
         """Set windows front to desktop"""
         user32 = windll.LoadLibrary("user32.dll")
-        if user32.IsIconic(self.hwnd_id):
-            user32.ShowWindow(self.hwnd_id, 9)
-        user32.SetForegroundWindow(self.hwnd_id)
+        if user32.IsIconic(self.hwnd):
+            user32.ShowWindow(self.hwnd, 9)
+        user32.SetForegroundWindow(self.hwnd)
 
     def show_window(self, cmd_show):
         """ Maxinum or Mininum windows
@@ -56,4 +56,4 @@ class HWND_OBJ:
         """
 
         user32 = windll.LoadLibrary("user32.dll")
-        user32.ShowWindow(self.hwnd_id, cmd_show)
+        user32.ShowWindow(self.hwnd, cmd_show)

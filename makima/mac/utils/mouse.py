@@ -17,6 +17,7 @@ class MacMouse:
     def right_mouse_double_click_event(self,x, y):
         right_mouse_click_event(x, y, 2)
 
-    def scroll_wheel(self,x, y,distance):
-        left_mouse_move_event(x, y)
+    def scroll_wheel(self,distance,x=None, y=None):
+        if x is not None and y is not None:
+            left_mouse_move_event(x, y)
         scroll_wheel_event(distance)

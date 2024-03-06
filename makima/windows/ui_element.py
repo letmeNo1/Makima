@@ -20,9 +20,23 @@ UIAutomationCore = comtypes.client.GetModule("UIAutomationCore.dll")
 IUIAutomation = comtypes.client.CreateObject("{ff48dba4-60ef-4201-aa87-54103eef594e}",
                                              interface=UIAutomationCore.IUIAutomation)
 
-_IUIAutomation = comtypes.CoCreateInstance(comtypes.gen.UIAutomationClient.CUIAutomation._reg_clsid_,
-                                           interface=comtypes.gen.UIAutomationClient.IUIAutomation,
-                                           clsctx=comtypes.CLSCTX_INPROC_SERVER)
+
+def get_uiautomation():
+    try:
+        _IUIAutomation = comtypes.CoCreateInstance(comtypes.gen.UIAutomationClient.CUIAutomation._reg_clsid_,
+                                                   interface=comtypes.gen.UIAutomationClient.IUIAutomation,
+                                                   clsctx=comtypes.CLSCTX_INPROC_SERVER)
+    except _ctypes.COMError as E:
+        print("UIAutomationClient is not installed")
+        return None
+    except WindowsError as E:
+        print("UIAutomationClient is not installed")
+        return None
+    except Exception as E:
+        print("UIAutomationClient is not installed")
+        return None
+    return _IUIAutomation
+
 
 UIAutomationClient = comtypes.gen.UIAutomationClient
 
@@ -46,6 +60,8 @@ class WinUIElement(object):
     def __get_IUIAutomationElement_attr(self, attr):
         try:
             attr = getattr(self.__IUIAutomationElement, attr)
+            if attr is None:
+                return ""
         except _ctypes.COMError:
             attr = ""
         return attr
@@ -123,8 +139,6 @@ class WinUIElement(object):
 
     ControlType = get_control_type
 
-
-
     @property
     def get_control_type_name(self):
         """Retrieves the name of the control type of the element.
@@ -150,7 +164,6 @@ class WinUIElement(object):
         :rtype : unicode
         """
         return self.__get_IUIAutomationElement_attr("CurrentName")
-
 
     Name = get_acc_name
 
@@ -201,9 +214,8 @@ class WinUIElement(object):
         return self.__get_state_text(self.__get_iaccessible_property(property_id["LegacyIAccessibleStateProperty"]))
 
     @property
-    def get_help(self):
+    def get_acc_help(self):
         return self.__get_iaccessible_property(property_id["LegacyIAccessibleHelpProperty"])
-
 
     @property
     def get_window_state(self):
@@ -214,23 +226,29 @@ class WinUIElement(object):
         return self.__IUIAutomationElement.GetCurrentPropertyValue(propertyId)
 
     def _build_condition(self, Name, ControlType, AutomationId):
-        condition = _IUIAutomation.CreateTrueCondition()
+        condition = get_uiautomation().CreateTrueCondition()
 
         if Name is not None:
-            name_condition = _IUIAutomation.CreatePropertyCondition(UIAutomationClient.UIA_NamePropertyId, Name)
-            condition = _IUIAutomation.CreateAndCondition(condition, name_condition)
+            name_condition = get_uiautomation().CreatePropertyCondition(UIAutomationClient.UIA_NamePropertyId, Name)
+            condition = get_uiautomation().CreateAndCondition(condition, name_condition)
 
         if ControlType is not None:
-            control_type_condition = _IUIAutomation.CreatePropertyCondition(
+            control_type_condition = get_uiautomation().CreatePropertyCondition(
                 UIAutomationClient.UIA_ControlTypePropertyId, ControlType)
-            condition = _IUIAutomation.CreateAndCondition(condition, control_type_condition)
+            condition = get_uiautomation().CreateAndCondition(condition, control_type_condition)
 
         if AutomationId is not None:
-            automation_id_condition = _IUIAutomation.CreatePropertyCondition(
+            automation_id_condition = get_uiautomation().CreatePropertyCondition(
                 UIAutomationClient.UIA_AutomationIdPropertyId, AutomationId)
-            condition = _IUIAutomation.CreateAndCondition(condition, automation_id_condition)
+            condition = get_uiautomation().CreateAndCondition(condition, automation_id_condition)
 
         return condition
+
+    def condition_find(self, Name=None, ControlType=None, AutomationId=None):
+        return self.__findall("subtree", Name, ControlType, AutomationId)
+
+    def condition_find_first(self, Name=None, ControlType=None, AutomationId=None):
+        return self.__findfirst("subtree", Name, ControlType, AutomationId)
 
     def __findfirst(self, tree_scope, Name=None, ControlType=None, AutomationId=None):
         """Retrieves the first child or descendant element that matches specified conditions
@@ -277,11 +295,19 @@ class WinUIElement(object):
         tree_scope = _tree_scope[tree_scope]
         condition = self._build_condition(Name, ControlType, AutomationId)
 
-        IUIAutomationElementArray = self.__IUIAutomationElement.FindAll(tree_scope, condition)
-        return [WinUIElement(IUIAutomationElementArray.GetElement(i)) for i in
-                range(IUIAutomationElementArray.Length)]
+        try:
+            IUIAutomationElementArray = self.__IUIAutomationElement.FindAll(tree_scope, condition)
+            rst = [WinUIElement(IUIAutomationElementArray.GetElement(i)) for i in
+                    range(IUIAutomationElementArray.Length)]
+        except ValueError:
+            rst = []
+            comtypes.CoUninitialize()
+        except _ctypes.COMError:
+            rst = []
+            comtypes.CoUninitialize()
+        return rst
 
-    def __invoke(self):
+    def invoke(self):
         IUnknown = self.__IUIAutomationElement.GetCurrentPattern(UIAutomationClient.UIA_InvokePatternId)
         IUIAutomationInvokePattern = IUnknown.QueryInterface(UIAutomationClient.IUIAutomationInvokePattern)
         IUIAutomationInvokePattern.Invoke()
@@ -292,14 +318,13 @@ class WinUIElement(object):
 
     def get_acc_children_elements(self) -> List[WinUIElement]:
         children_list = []
-        condition = _IUIAutomation.CreateTrueCondition()
+        condition = get_uiautomation().CreateTrueCondition()
         tree_scope = comtypes.gen.UIAutomationClient.TreeScope_Children
         children = self.__IUIAutomationElement.FindAll(tree_scope, condition)
         for i in range(children.Length):
             child = children.GetElement(i)
             if WinUIElement(child).get_acc_name != "Desktop" and WinUIElement(child).get_acc_name != "Program Manager":
                 children_list.append(WinUIElement(child))
-
         return children_list
 
     def get_parent(self) -> WinUIElement:
@@ -369,16 +394,17 @@ class WinUIElement(object):
         self._mouse.click(x, y, need_move)
 
     def hover(self, x_coordinate=None, y_coordinate=None, x_offset: float = None,
-              y_offset: float = None, need_move=False,):
+              y_offset: float = None, need_move=False, ):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.move(x, y, need_move)
 
-    def right_click(self, x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None, need_move=False):
+    def right_click(self, x_coordinate=None, y_coordinate=None, x_offset: float = None, y_offset: float = None,
+                    need_move=False):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.click(x, y, need_move, self._mouse.RIGHT_BUTTON)
 
     def double_click(self, x_coordinate=None, y_coordinate=None, x_offset: float = None,
-              y_offset: float = None):
+                     y_offset: float = None):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
 
         self._mouse.double_click(x, y)
