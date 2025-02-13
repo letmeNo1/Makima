@@ -5,6 +5,7 @@ from typing import List
 import _ctypes
 import comtypes.client
 from makima.windows.static_variable import state_dict, _control_type, property_id, _tree_scope
+from makima.windows.utils.hwnd import HWND_OBJ
 
 from makima.windows.utils.mouse import WinMouse
 from makima.windows.utils.keyboard import WinKeyboard
@@ -14,6 +15,8 @@ import comtypes.client
 from makima.helper.find_ui_element import *
 
 from makima.windows.static_variable import role_dict
+
+from loguru import logger
 
 CO_E_OBJNOTCONNECTED = -2147220995
 UIAutomationCore = comtypes.client.GetModule("UIAutomationCore.dll")
@@ -41,10 +44,11 @@ def get_uiautomation():
 UIAutomationClient = comtypes.gen.UIAutomationClient
 
 
-class WinUIElement(object):
-    def __init__(self, IUIAutomationElement):
+class WinUIElement(HWND_OBJ):
+    def __init__(self, IUIAutomationElement, hwnd=None):
         self.__IUIAutomationElement = IUIAutomationElement
         self.current_hwnd = None
+        super().__init__(hwnd)
         self._mouse = WinMouse()
         self._keyboard = WinKeyboard()
         self.get_last_ele: WinUIElement = None
@@ -101,6 +105,10 @@ class WinUIElement(object):
     @property
     def get_acc_keyboardshortcut(self):
         return self.__get_iaccessible_property(property_id["LegacyIAccessibleKeyboardShortcutProperty"])
+
+    @property
+    def get_RuntimeIdProperty(self):
+        return self.__get_iaccessible_property(property_id["RuntimeIdProperty"])
 
     @property
     def get_automation_id(self):
@@ -223,7 +231,10 @@ class WinUIElement(object):
         return state.get(int(self.__get_iaccessible_property(property_id["WindowWindowVisualStateProperty"])))
 
     def __get_iaccessible_property(self, propertyId):
-        return self.__IUIAutomationElement.GetCurrentPropertyValue(propertyId)
+        try:
+            return self.__IUIAutomationElement.GetCurrentPropertyValue(propertyId)
+        except comtypes.COMError:
+            return None
 
     def _build_condition(self, Name, ControlType, AutomationId):
         condition = get_uiautomation().CreateTrueCondition()
@@ -318,13 +329,20 @@ class WinUIElement(object):
 
     def get_acc_children_elements(self) -> List[WinUIElement]:
         children_list = []
-        condition = get_uiautomation().CreateTrueCondition()
-        tree_scope = comtypes.gen.UIAutomationClient.TreeScope_Children
-        children = self.__IUIAutomationElement.FindAll(tree_scope, condition)
-        for i in range(children.Length):
-            child = children.GetElement(i)
-            if WinUIElement(child).get_acc_name != "Desktop" and WinUIElement(child).get_acc_name != "Program Manager":
-                children_list.append(WinUIElement(child))
+        try:
+            condition = get_uiautomation().CreateTrueCondition()
+            tree_scope = comtypes.gen.UIAutomationClient.TreeScope_Children
+            children = self.__IUIAutomationElement.FindAll(tree_scope, condition)
+            for i in range(children.Length):
+                child = children.GetElement(i)
+                if WinUIElement(child).get_acc_name != "Desktop" and WinUIElement(child).get_acc_name != "Program Manager":
+                    children_list.append(WinUIElement(child))
+        except ValueError:
+            pass
+        except _ctypes.COMError:
+            pass
+        except OSError:
+            pass
         return children_list
 
     def get_parent(self) -> WinUIElement:
@@ -332,6 +350,10 @@ class WinUIElement(object):
 
     def get_subtree(self) -> List[WinUIElement]:
         return self.__findall("subtree")
+
+    def get_visible_children(self) -> List[WinUIElement]:
+        tree = self.get_subtree()
+        return [ele for ele in tree if "focusable" in ele.get_state and "collapsed" not in ele.get_state and "invisible" not in ele.get_state]
 
     @property
     def get_CachedNativeWindowHandle(self):
@@ -347,13 +369,24 @@ class WinUIElement(object):
         control_type_name=control type name
     '''
 
-    def ele(self, timeout=5, **query) -> WinUIElement:
-        return wait_function(timeout, find_element_by_query, self, **query)
+    def ele(self, timeout=5, **query) -> LazyElement | WinUIElement:
+        if any('ocr' in key for key in query):
+            modified_query = {key.replace('ocr_', ''): value if 'ocr_' in key else value for key, value in
+                              query.items()}
+            win = WindowsDriver(self)
+            return win(**modified_query)
+        else:
+            return wait_function(timeout, find_element_by_query, self, **query)
 
     def any_ele(self, query, timeout=5) -> WinUIElement:
         return wait_any(timeout, find_element_by_query, self, query)
 
-    def eles(self, timeout=5, **query) -> List[WinUIElement]:
+    def eles(self, timeout=5, **query) -> LazyElement | List[WinUIElement]:
+        if any('ocr' in key for key in query):
+            modified_query = {key.replace('ocr_', ''): value if 'ocr_' in key else value for key, value in
+                              query.items()}
+            win = WindowsDriver(self)
+            return win(**modified_query)
         return wait_function(timeout, find_elements_by_query, self, **query)
 
     def check_element_exist(self, timeout=5, **query):
@@ -392,6 +425,12 @@ class WinUIElement(object):
               y_offset: float = None, need_move=False):
         x, y = self.__get_coordinate(x_coordinate, y_coordinate, x_offset, y_offset)
         self._mouse.click(x, y, need_move)
+
+    def set_seek_bar(self, percentage):
+        x = self.get_acc_location()[0] + (self.get_acc_location()[2]-self.get_acc_location()[0]) * percentage
+        y = self.__get_coordinate()[1]
+        self.click(x, y)
+        logger.debug(f"set seek bar to {percentage}")
 
     def hover(self, x_coordinate=None, y_coordinate=None, x_offset: float = None,
               y_offset: float = None, need_move=False, ):

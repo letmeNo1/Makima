@@ -11,7 +11,6 @@ import HIServices
 from makima.helper.find_ui_element import *
 from makima.mac.utils.common import MacCommon
 from makima.mac.utils.mouse import *
-
 """
 Library of Apple A11y functions
 """
@@ -277,6 +276,8 @@ class MacUIElement(object):
             return None
         except ErrorCannotComplete:
             return None
+        except ErrorInvalidUIElement:
+            return None
 
     def get_position(self):
         try:
@@ -440,11 +441,11 @@ class MacUIElement(object):
         left_mouse_dragged_event(x, y, to_x, to_y, duration)
 
     def input_text(self, text):
-        x, y = self.get_center_coordinates
+        x, y = self.get_center_coordinates()
         self._common.input_text(text, x, y)
 
     def clear(self):
-        x, y = self.get_center_coordinates
+        x, y = self.get_center_coordinates()
         self._common.clear(x, y)
 
     '''

@@ -1,5 +1,4 @@
 import time
-
 import re
 from typing import List
 import Cocoa
@@ -9,7 +8,7 @@ from makima.mac.utils.keyboard import MacKeyBoard
 from makima.mac.utils.mouse import MacMouse
 from makima.mac.call_mac_api.call_app_kit import CallAppKit
 from makima.mac.utils.window_obj import WindowOBJ
-
+from AppKit import NSWorkspace
 
 _window_type = {
     1: [Quartz.kCGWindowListOptionAll, Quartz.kCGNullWindowID],
@@ -18,34 +17,51 @@ _window_type = {
 
 
 class MacCommon(CallAppKit):
+    def open_app_by_name(self, app_name):
+        workspace = NSWorkspace.sharedWorkspace()
+        app_path = workspace.fullPathForApplication_(app_name)
+        if app_path:
+            workspace.launchApplication_(app_path)
+            print(f"{app_name} The application has started successfully！")
+        else:
+            print(f"Can't found {app_name}.")
+
     def input_text(self, text, x=None, y=None):
         self.set_paste_board(text)
         if x is not None:
             MacMouse().left_mouse_single_click_event(x, y)
         MacKeyBoard().send_keys(MacKeyBoard().codes.KEY_V, MacKeyBoard().mask_codes.COMMAND)
+
     def clear(self, x=None, y=None):
         if x is not None:
             MacMouse().left_mouse_single_click_event(x, y)
         MacKeyBoard().send_keys(MacKeyBoard().codes.KEY_A, MacKeyBoard().mask_codes.COMMAND)
         MacKeyBoard().send_keys(MacKeyBoard().codes.DELETE)
+
     def active_app(self, app_name):
         running_app = self.get_app_by_name(app_name)
         running_app.activateWithOptions_(Cocoa.NSApplicationActivateIgnoringOtherApps)
+
     def hide_app(self, app_name):
         running_app = self.get_app_by_name(app_name)
         running_app.hide()
+
     def unhide_app(self, app_name):
         running_app = self.get_app_by_name(app_name)
         running_app.unhide()
+
     def is_finished_launching(self, app_name):
         running_app = self.get_app_by_name(app_name)
         return running_app.isFinishedLaunching()
+
     def is_hide(self, app_name):
         running_app = self.get_app_by_name(app_name)
         return running_app.isHidden()
+
     def is_active(self, app_name):
         running_app = self.get_app_by_name(app_name)
         return running_app.isActive()
+
     def __assert_ui_window(self, window, **query):
         rst = []
         for query_method, query_string in query.items():
@@ -75,6 +91,7 @@ class MacCommon(CallAppKit):
         window_list = Quartz.CGWindowListCopyWindowInfo(_window_type.get(window_type)[0],
                                                         _window_type.get(window_type)[1])
         return window_list
+
     def get_screen_size(self):
         screen = NSScreen.mainScreen()
         visible_frame = screen.visibleFrame()
@@ -82,7 +99,7 @@ class MacCommon(CallAppKit):
         height = visible_frame.size.height
         return width, height
 
-    def find_windows_by_wait(self, window_type=1, timeout=5, **query) -> List[WindowOBJ]:
+    def find_window_by_wait(self, window_type=1, timeout=5, **query) -> List[WindowOBJ]:
         time_started_sec = time.time()
         while time.time() < time_started_sec + timeout:
             result = self.find_windows(window_type, **query)

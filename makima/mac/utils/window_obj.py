@@ -1,3 +1,6 @@
+import subprocess
+
+
 class WindowOBJ:
     def __init__(self, window_info):
         self.window_info = window_info
@@ -6,6 +9,11 @@ class WindowOBJ:
     def get_window_title(self):
         """Get native window title."""
         return self.window_info.get("kCGWindowName")
+
+    @property
+    def get_window_id(self):
+        """Get native window id."""
+        return self.window_info.get("kCGWindowOwnerPID")
 
     @property
     def is_on_screen(self):
@@ -47,3 +55,14 @@ class WindowOBJ:
     @property
     def is_minimize(self):
         return bool(self.window_info.get("kCGWindowIsOnscreen"))
+
+    def focus_window(self):
+        # AppleScript script to activate a specific window
+        script = f'''
+        tell application "System Events"
+            set frontmost of the first process whose unix id is {self.get_window_id} to true
+        end tell
+        '''
+        # Run AppleScript
+        subprocess.run(['osascript', '-e', script])
+

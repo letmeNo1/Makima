@@ -200,11 +200,11 @@ class WinMouse(IMouse,WinCommon):
             self._compose_mouse_event(button_name, press=True, release=True),
             0, 0, 0, 0)
 
-    def double_click(self, x, y, button_name=LEFT_BUTTON):
+    def double_click(self, x, y,need_move=False, button_name=LEFT_BUTTON):
         self._verify_xy_coordinates(x, y)
         self._verify_mouse_button_name(button_name,self._SUPPORTED_BUTTON_NAMES)
 
-        self.move(x, y)
+        self.move(x, y,need_move)
         self._do_event(
             self._compose_mouse_event(button_name, press=True, release=True),
             0, 0, 0, 0)

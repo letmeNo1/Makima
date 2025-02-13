@@ -1,3 +1,5 @@
+import time
+
 from makima.mac.call_mac_api.call_quartz_event_services import *
 
 
@@ -6,6 +8,7 @@ class MacMouse:
         mouse_move_event(x, y)
 
     def left_mouse_single_click_event(self,x, y):
+        time.sleep(0.5)
         left_mouse_click_event(x, y, 1)
 
     def left_mouse_double_click_event(self,x, y):
