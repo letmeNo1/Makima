@@ -8,7 +8,7 @@ from makima.mac.utils.keyboard import MacKeyBoard
 from makima.mac.utils.mouse import MacMouse
 from makima.mac.call_mac_api.call_app_kit import CallAppKit
 from makima.mac.utils.window_obj import WindowOBJ
-from AppKit import NSWorkspace
+from loguru import logger
 
 _window_type = {
     1: [Quartz.kCGWindowListOptionAll, Quartz.kCGNullWindowID],
@@ -66,19 +66,17 @@ class MacCommon(CallAppKit):
         rst = []
         for query_method, query_string in query.items():
             if "name" in query_method:
-                query_method = query_method.replace("name", "kCGWindowName")
+                element_attr = window.get_window_title
+            if "window_name" in query_method:
+                element_attr = window.get_window_name
             if "pid" in query_method:
-                query_method = query_method.replace("pid", "kCGWindowOwnerPID")
-            if "owner_name" in query_method:
-                query_method = query_method.replace("owner_name", "kCGWindowOwnerName")
+                query_string = int(query_string)
+                element_attr = window.get_owner_pid
             if "contains" in query_method:
-                element_attr: str = window.get(query_method.replace("_contains", ""))
-                rst.append(str(element_attr).find(query_string) != -1)
+                rst.append(query_string in element_attr)
             elif "matches" in query_method:
-                element_attr: str = window.get(query_method.replace("_matches", ""))
-                rst.append(re.search(query_string, str(element_attr)) is not None)
+                rst.append(re.search(query_string, element_attr) is not None)
             else:
-                element_attr: str = window.get(query_method)
                 rst.append(element_attr == query_string)
         return all(rst)
 
@@ -99,22 +97,47 @@ class MacCommon(CallAppKit):
         height = visible_frame.size.height
         return width, height
 
-    def find_window_by_wait(self, window_type=1, timeout=5, **query) -> List[WindowOBJ]:
+    def find_window_by_wait(self, window_type=1, timeout=5, **query) -> WindowOBJ:
         time_started_sec = time.time()
         while time.time() < time_started_sec + timeout:
             result = self.find_windows(window_type, **query)
             if len(result) > 0:
-                return result
-        error = "Can't find window"
+                if len(result) > 1:
+                    error = f"Found more than one window: {len(result)} windows found."
+                    for window_obj in result:
+                        pid = window_obj.get_owner_pid
+                        error += f"\nWindow PID: {pid}, title: {window_obj.get_window_title}"
+                    raise ValueError(error)
+                else:
+                    return result[0]
+        import json
+        error = f"Can't find window by {json.dumps(query)}"
+        self.print_windows()
         raise TimeoutError(error)
 
     def find_windows(self, window_type=1, **query) -> List[WindowOBJ]:
         rst = []
-        window_list = Quartz.CGWindowListCopyWindowInfo(_window_type.get(window_type)[0],
-                                                        _window_type.get(window_type)[1])
-        for win in window_list:
-            if self.__assert_ui_window(win, **query):
-                rst.append(WindowOBJ(win))
-        if len(rst) == 0:
-            raise ValueError("No window found")
+        windows = Quartz.CGWindowListCopyWindowInfo(
+            Quartz.kCGWindowListExcludeDesktopElements | Quartz.kCGWindowListOptionOnScreenOnly, Quartz.kCGNullWindowID)
+        for win in windows:
+            window_obj = WindowOBJ(win)
+            if self.__assert_ui_window(window_obj, **query):
+                rst.append(window_obj)
         return rst
+
+    def print_windows(self, filter_window_name=None, window_type=1):
+        """
+        Prints information about all windows. If filter_window_name is provided, only windows with titles containing this string will be printed.
+
+        Parameters:
+        filter_window_name (str): Optional parameter used to filter window names. Only windows with titles containing this string will be printed.
+        """
+        windows = Quartz.CGWindowListCopyWindowInfo(
+            Quartz.kCGWindowListExcludeDesktopElements | Quartz.kCGWindowListOptionOnScreenOnly, Quartz.kCGNullWindowID)
+        for window in windows:
+            window_obj = WindowOBJ(window)
+            if filter_window_name:
+                if filter_window_name in str(window_obj.get_window_title):
+                    logger.debug(f"Window Pid: {window_obj.get_owner_pid},window title: {window_obj.get_window_title}, window_name: {window_obj.get_window_name}")
+            else:
+                logger.debug(f"Window Pid: {window_obj.get_owner_pid},window title: {window_obj.get_window_title}, window_name: {window_obj.get_window_name}")

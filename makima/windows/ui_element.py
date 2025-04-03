@@ -9,13 +9,12 @@ from makima.windows.utils.hwnd import HWND_OBJ
 
 from makima.windows.utils.mouse import WinMouse
 from makima.windows.utils.keyboard import WinKeyboard
+import pygetwindow as gw
 
 import comtypes.client
 
 from makima.helper.find_ui_element import *
-
 from makima.windows.static_variable import role_dict
-
 from loguru import logger
 
 CO_E_OBJNOTCONNECTED = -2147220995
@@ -369,28 +368,45 @@ class WinUIElement(HWND_OBJ):
         control_type_name=control type name
     '''
 
-    def ele(self, timeout=5, **query) -> LazyElement | WinUIElement:
+    def ele(self, timeout=5, **query) -> 'LazyElement | List[WinUIElement]':
+        from apollo_cathin.common.lazy_element import LazyElement
+        from typing import List
+        from apollo_cathin.Windows.windows_driver import WindowsDriver
         if any('ocr' in key for key in query):
             modified_query = {key.replace('ocr_', ''): value if 'ocr_' in key else value for key, value in
                               query.items()}
-            win = WindowsDriver(self)
+            win = WindowsDriver(self.__get_windows_with_handle(self.hwnd))
             return win(**modified_query)
         else:
             return wait_function(timeout, find_element_by_query, self, **query)
 
+
     def any_ele(self, query, timeout=5) -> WinUIElement:
         return wait_any(timeout, find_element_by_query, self, query)
 
-    def eles(self, timeout=5, **query) -> LazyElement | List[WinUIElement]:
+    def __get_windows_with_handle(self, handle):
+        for win in gw.getAllWindows():
+            if int(win._hWnd) == int(handle):
+                return win
+
+    def eles(self, timeout=5, **query) -> 'LazyElement | List[WinUIElement]':
+        from apollo_cathin.common.lazy_element import LazyElement
+        from typing import List
+        from apollo_cathin.Windows.windows_driver import WindowsDriver
         if any('ocr' in key for key in query):
             modified_query = {key.replace('ocr_', ''): value if 'ocr_' in key else value for key, value in
                               query.items()}
-            win = WindowsDriver(self)
+            win = WindowsDriver(self.__get_windows_with_handle(self.hwnd))
             return win(**modified_query)
-        return wait_function(timeout, find_elements_by_query, self, **query)
+        wait_function(timeout, find_elements_by_query, self, **query)
+        return find_elements_by_query(self, **query)
 
     def check_element_exist(self, timeout=5, **query):
         rst = wait_exist(timeout, find_element_by_query, self, **query)
+        return rst
+
+    def wait_element_disappear(self, timeout=5, **query):
+        rst = wait_disappear(timeout, find_element_by_query, self, **query)
         return rst
 
     def scroll_to_find_element(self, scroll_time=15, timeout=5, **query):

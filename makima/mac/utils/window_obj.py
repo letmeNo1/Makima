@@ -8,7 +8,14 @@ class WindowOBJ:
     @property
     def get_window_title(self):
         """Get native window title."""
-        return self.window_info.get("kCGWindowName")
+        owner_name = self.window_info.get("kCGWindowOwnerName")
+        return owner_name
+
+    @property
+    def get_window_name(self):
+        """Get native window name."""
+        window_name = self.window_info.get("kCGWindowName")
+        return window_name
 
     @property
     def get_window_id(self):

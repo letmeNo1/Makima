@@ -31,11 +31,19 @@ def wait_function(timeout, func, root, **query):
     end_time = time_started_sec + timeout
     while time.time() < end_time:
         result = func(root, **query)
-        if result is not None:
-            finish_time = time.time() - time_started_sec
-            return result
-    error = "Can't find element/elements in %s s by %s = %s" % (timeout, query_method, query_string)
-    raise TimeoutError(error)
+        if isinstance(result, list):
+            if len(result) > 0:
+                return result
+        else:
+            if result is not None:
+                finish_time = time.time() - time_started_sec
+
+                return result
+    if func.__name__ == "find_elements_by_query":
+        return []
+    else:
+        error = "Can't find element in %s s by %s = %s" % (timeout, query_method, query_string)
+        raise TimeoutError(error)
 
 
 def wait_any(timeout, func, root, querylist):
@@ -59,6 +67,18 @@ def wait_exist(timeout, func, root, **query):
     while time.time() < end_time:
         result = func(root, **query)
         if result is not None:
+            return True
+    return rst
+
+
+def wait_disappear(timeout, func, root, **query):
+    rst = False
+    time_started_sec = time.time()
+    end_time = time_started_sec + timeout
+
+    while time.time() < end_time:
+        result = func(root, **query)
+        if result is None:
             return True
     return rst
 
@@ -90,9 +110,7 @@ def __traversal_node(root, is_muti, **query):
         if platform.system() == "Windows":
             element_id = element.get_RuntimeIdProperty
         else:
-            var = element.get_role
-            element_id = str(element)
-
+            element_id = None
         if level > init_level:
             init_level += 1
         rst = __assert_ui_element(element, **query)

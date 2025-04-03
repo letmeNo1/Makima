@@ -11,6 +11,7 @@ import HIServices
 from makima.helper.find_ui_element import *
 from makima.mac.utils.common import MacCommon
 from makima.mac.utils.mouse import *
+
 """
 Library of Apple A11y functions
 """
@@ -181,17 +182,26 @@ class MacUIElement(object):
         :param args:
         :return:
         """
-        err, attr_value = HIServices.AXUIElementCopyAttributeValue(self.ref, attr, None)
-        if err == HIServices.kAXErrorNoValue:
-            return
+        try:
+            err, attr_value = HIServices.AXUIElementCopyAttributeValue(self.ref, attr, None)
+            if err == HIServices.kAXErrorNoValue:
+                return
 
-        if err != AppServ.kAXErrorSuccess:
-            if err == HIServices.kAXErrorNotImplemented:
+            if err != AppServ.kAXErrorSuccess:
+                if err == HIServices.kAXErrorNotImplemented:
 
-                set_error(err, 'Attribute not implemented')
-            else:
-                set_error(err, 'Error retrieving attribute')
-        return cf_attribute_to_py_oject(self, attr_value)
+                    set_error(err, 'Attribute not implemented')
+                else:
+                    set_error(err, 'Error retrieving attribute')
+            return cf_attribute_to_py_oject(self, attr_value)
+        except ErrorUnsupported:
+            return None
+        except ErrorCommon:
+            return None
+        except ErrorCannotComplete:
+            raise ErrorCannotComplete("Element rendering failed, please re-initialize the window object with new process e.g. win = makima(name='teams',new_process=True)")
+        except ErrorInvalidUIElement:
+            return None
 
     def __set_attribute(self, attr, val):
         """
@@ -253,14 +263,7 @@ class MacUIElement(object):
 
     @property
     def get_role(self):
-        try:
-            return self.__get_attribute(AppServ.kAXRoleAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXRoleAttribute)
 
     def get_acc_children_elements(self):
         try:
@@ -280,119 +283,49 @@ class MacUIElement(object):
             return None
 
     def get_position(self):
-        try:
-            return self.__get_attribute(AppServ.kAXPositionAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     @property
     def get_identifier(self):
-        try:
-            return self.__get_attribute(AppServ.kAXIdentifierAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     def get_size(self):
         return self.__get_attribute(AppServ.kAXSizeAttribute)
 
     @property
     def get_title(self):
-        try:
-            return self.__get_attribute(AppServ.kAXTitleAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     @property
     def get_value(self):
-        try:
-            return self.__get_attribute(AppServ.kAXValueAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     @property
     def get_label(self):
-        try:
-            return self.__get_attribute(AppServ.kAXDescriptionAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     @property
     def get_description(self):
-        try:
-            return self.__get_attribute(AppServ.kAXDescriptionAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     @property
     def get_role_description(self):
-        try:
-            return self.__get_attribute(AppServ.kAXRoleDescriptionAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     def get_parent(self):
         return self.__get_attribute(AppServ.kAXParentAttribute)
 
     @property
     def get_help(self):
-        try:
-            return self.__get_attribute(AppServ.kAXHelpAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     @property
     def get_sub_role(self):
-        try:
-            return self.__get_attribute(AppServ.kAXSubroleAttribute)
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     @property
     def get_selected(self) -> bool:
-        try:
-            return bool(self.__get_attribute(AppServ.kAXSelectedAttribute))
-        except ErrorUnsupported:
-            return None
-        except ErrorInvalidUIElement:
-            return None
-        except ErrorCommon:
-            return None
+        return self.__get_attribute(AppServ.kAXPositionAttribute)
 
     def _set_last_ele(self, ele):
         self.get_last_ele = ele
@@ -463,8 +396,8 @@ class MacUIElement(object):
         return wait_function(timeout, find_element_by_query, self, **query)
 
     def eles(self, timeout=5, **query) -> List[MacUIElement]:
-        elements_ref = wait_function(timeout, find_elements_by_query, self, **query)
-        return elements_ref
+        wait_function(timeout, find_element_by_query, self, **query)
+        return find_elements_by_query(self, **query)
 
     def check_element_exist(self, timeout=5, **query):
         rst = wait_exist(timeout, find_element_by_query, self, **query)

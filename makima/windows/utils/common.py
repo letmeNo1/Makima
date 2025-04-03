@@ -88,15 +88,21 @@ class WinCommon:
                 rst.append(element_attr == query_string)
         return all(rst)
 
-    def print_windows(self,filter =None):
+    def print_windows(self, filter_window_name=None):
+        """
+        Prints information about all windows. If filter_window_name is provided, only windows with titles containing this string will be printed.
+
+        Parameters:
+        filter_window_name (str): Optional parameter used to filter window names. Only windows with titles containing this string will be printed.
+        """
         windows = gw.getAllWindows()
         for window in windows:
             hwnd = window._hWnd
             buffer = ctypes.create_unicode_buffer(255)
             self.user32.GetWindowTextW(hwnd, buffer, 255)
             class_name = self.__get_window_class_name(hwnd)
-            if filter:
-                if filter in str(buffer.value):
+            if filter_window_name:
+                if filter_window_name in str(buffer.value):
                     logger.debug(f"Window Handle: {hwnd}, Title: {buffer.value}, Class Name: {class_name}")
             else:
                 logger.debug(f"Window Handle: {hwnd}, Title: {buffer.value}, Class Name: {class_name}")
