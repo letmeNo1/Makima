@@ -78,11 +78,15 @@ class Init_App_Ref_For_Mac(CallAppKit):
             return MacUIElementProxy(request_queue, response_queue)
         else:
             mac_common = MacCommon()
-            if window is not None:
+            keys = query.keys()
+            if "pid" in keys:
+                pid = int(query.get("pid"))
+                return MacUIElement(AppServ.AXUIElementCreateApplication(pid))
+            elif window is not None:
                 if "TopApplication" == window:
                     pid = self.get_frontmost_pid()
                 else:
-                    window_obj = mac_common.find_window_by_wait(window_type, timeout, name=window)
+                    window_obj = mac_common.find_window_by_wait(window_type, timeout, **query)
                     pid = window_obj.get_owner_pid
             else:
                 window_obj = mac_common.find_window_by_wait(window_type, timeout, **query)

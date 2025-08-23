@@ -3,6 +3,7 @@ import re
 from typing import List
 import Cocoa
 import Quartz
+import AppKit
 from AppKit import NSScreen
 from makima.mac.utils.keyboard import MacKeyBoard
 from makima.mac.utils.mouse import MacMouse
@@ -18,7 +19,7 @@ _window_type = {
 
 class MacCommon(CallAppKit):
     def open_app_by_name(self, app_name):
-        workspace = NSWorkspace.sharedWorkspace()
+        workspace = AppKit.NSWorkspace.sharedWorkspace()
         app_path = workspace.fullPathForApplication_(app_name)
         if app_path:
             workspace.launchApplication_(app_path)
@@ -117,12 +118,21 @@ class MacCommon(CallAppKit):
 
     def find_windows(self, window_type=1, **query) -> List[WindowOBJ]:
         rst = []
+        seen_pids = set() 
+        
         windows = Quartz.CGWindowListCopyWindowInfo(
-            Quartz.kCGWindowListExcludeDesktopElements | Quartz.kCGWindowListOptionOnScreenOnly, Quartz.kCGNullWindowID)
+            Quartz.kCGWindowListExcludeDesktopElements | Quartz.kCGWindowListOptionOnScreenOnly, 
+            Quartz.kCGNullWindowID
+        )
+        
         for win in windows:
-            window_obj = WindowOBJ(win)
-            if self.__assert_ui_window(window_obj, **query):
-                rst.append(window_obj)
+            pid = win.get("kCGWindowOwnerPID")
+            if pid is not None and pid not in seen_pids:
+                window_obj = WindowOBJ(win)
+                if self.__assert_ui_window(window_obj, **query):
+                    seen_pids.add(pid)
+                    rst.append(window_obj)
+        
         return rst
 
     def print_windows(self, filter_window_name=None, window_type=1):
@@ -138,6 +148,6 @@ class MacCommon(CallAppKit):
             window_obj = WindowOBJ(window)
             if filter_window_name:
                 if filter_window_name in str(window_obj.get_window_title):
-                    logger.debug(f"Window Pid: {window_obj.get_owner_pid},window title: {window_obj.get_window_title}, window_name: {window_obj.get_window_name}")
+                    logger.debug(f"Window Pid: {window_obj.get_owner_pid},name: {window_obj.get_window_title}, window_name: {window_obj.get_window_name}")
             else:
-                logger.debug(f"Window Pid: {window_obj.get_owner_pid},window title: {window_obj.get_window_title}, window_name: {window_obj.get_window_name}")
+                logger.debug(f"Window Pid: {window_obj.get_owner_pid},name: {window_obj.get_window_title}, window_name: {window_obj.get_window_name}")

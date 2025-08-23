@@ -9,7 +9,7 @@ def parse_requirements(filename):
 
 setuptools.setup(
     name="Makima",
-    version="0.1.9.4",
+    version="0.1.9.5",
     author="hank.huang",
     author_email="hank.huang550@gmail.com",
     description="A cross-platform desktop automated testing framework.",

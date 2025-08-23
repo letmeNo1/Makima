@@ -287,22 +287,22 @@ class MacUIElement(object):
 
     @property
     def get_identifier(self):
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXIdentifierAttribute)
 
     def get_size(self):
         return self.__get_attribute(AppServ.kAXSizeAttribute)
 
     @property
     def get_title(self):
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXTitleAttribute)
 
     @property
     def get_value(self):
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXValueAttribute)
 
     @property
     def get_label(self):
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXDescriptionAttribute)
 
     @property
     def get_description(self):
@@ -310,22 +310,22 @@ class MacUIElement(object):
 
     @property
     def get_role_description(self):
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXRoleDescriptionAttribute)
 
     def get_parent(self):
         return self.__get_attribute(AppServ.kAXParentAttribute)
 
     @property
     def get_help(self):
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXHelpAttribute)
 
     @property
     def get_sub_role(self):
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXSubroleAttribute)
 
     @property
     def get_selected(self) -> bool:
-        return self.__get_attribute(AppServ.kAXPositionAttribute)
+        return self.__get_attribute(AppServ.kAXSelectedAttribute)
 
     def _set_last_ele(self, ele):
         self.get_last_ele = ele
