@@ -15,7 +15,7 @@ class MyTest(unittest.TestCase):
         self.calculator = self.makima("Calculator")
 
         # Make the window appear at frontends
-        self.makima_common.active_window("Calculator")
+        self.makima_common.active_app("Calculator")
         assert self.makima_common.is_finished_launching("Calculator") is True
 
     def tearDown(self):
